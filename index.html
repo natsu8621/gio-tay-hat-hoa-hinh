@@ -79,6 +79,43 @@
     #toast{top:22%}
     .teach{top:auto;bottom:12px;transform:translateX(-50%);max-height:62vh}
   }
+  /* ---------- 📖 Chế độ học ---------- */
+  .hoc-fab{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:25;font-size:13px;font-weight:600;padding:7px 11px;border-radius:999px;background:rgba(6,16,18,.85);border:1px solid var(--miku);color:var(--ink);box-shadow:0 0 14px rgba(57,197,187,.35)}
+  .hoc-fab[aria-expanded="true"]{background:var(--miku);color:#04201e}
+  .hoc-fab kbd{font:inherit;font-size:10.5px;opacity:.7;margin-left:4px}
+  .hoc-drawer{position:fixed;top:0;right:0;bottom:0;width:min(380px,100vw);z-index:30;background:rgba(6,16,18,.96);border-left:1px solid var(--line);backdrop-filter:blur(8px);display:flex;flex-direction:column;font-size:13px;line-height:1.5;color:var(--ink);animation:hoc-in .25s ease-out}
+  .hoc-drawer[hidden]{display:none}
+  @keyframes hoc-in{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+  .hoc-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px 8px;border-bottom:1px solid var(--line)}
+  .hoc-head b{color:var(--miku);font-size:15px}
+  .hoc-head button{padding:2px 9px}
+  .hoc-body{overflow-y:auto;overflow-x:hidden;padding:10px 14px 16px;display:flex;flex-direction:column;gap:14px;overscroll-behavior:contain}
+  .hoc-body h2{font-size:13.5px;color:var(--miku);margin-bottom:4px}
+  .hoc-sub,.hoc-lead{font-size:12px;color:var(--mute)}
+  .hoc-ck{display:flex;gap:8px;align-items:flex-start;padding:5px 0;cursor:pointer;font-size:12.5px}
+  .hoc-ck input{margin-top:3px;accent-color:var(--miku);flex:0 0 auto}
+  .hoc-ck b{color:#fff;font-weight:600}
+  .hoc-sl{display:flex;flex-direction:column;gap:2px;padding:6px 0;border-top:1px dashed rgba(57,197,187,.18)}
+  .hoc-sl label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px}
+  .hoc-sl output{color:var(--miku);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .hoc-sl input{width:100%;accent-color:var(--miku)}
+  .hoc-sl small{font-size:11.5px;color:var(--mute)}
+  .hoc-f{font:12px ui-monospace,Consolas,monospace;background:#0b1a1d;border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:#cfe9ea;overflow-wrap:anywhere}
+  .hoc-f b{color:var(--miku);font-weight:600}
+  .hoc-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .hoc-tb{width:100%;border-collapse:collapse;font-size:11.5px;table-layout:fixed}
+  .hoc-tb th,.hoc-tb td{border:1px solid rgba(57,197,187,.2);padding:5px;vertical-align:top;text-align:left;overflow-wrap:anywhere}
+  .hoc-tb th{color:var(--miku);font-weight:600;background:rgba(57,197,187,.08)}
+  .hoc-tb td:first-child{color:#fff}
+  .hoc-tb i{color:var(--mute);font-style:normal}
+  .hoc-code{font:11px/1.45 ui-monospace,Consolas,monospace;background:#0b1a1d;border:1px solid var(--line);border-radius:8px;padding:8px;color:#d6f5f2;white-space:pre;overflow-x:auto;max-width:100%}
+  @media (max-width:600px){
+    .hoc-fab{right:10px;font-size:12px;padding:6px 9px}
+    .hoc-fab kbd{display:none}
+    .hoc-drawer{top:auto;left:0;width:100vw;height:68vh;border-left:0;border-top:1px solid var(--line);border-radius:14px 14px 0 0;animation-name:hoc-up}
+    @keyframes hoc-up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  }
+  @media (prefers-reduced-motion:reduce){.hoc-drawer{animation:none}}
   .start{margin:6px 0 4px;color:#e8f6f5;font-size:14px}.start b{color:var(--miku)}
   @media (max-width:600px){.title p.start{display:block;font-size:12.5px}}
 </style>
@@ -180,6 +217,60 @@
     </ol>
   </details>
 </div>
+
+<button class="hoc-fab" id="hocBtn" type="button" aria-expanded="false" aria-controls="hocPanel" title="Phím L — bật/tắt chế độ học">📖 Học<kbd>L</kbd></button>
+<aside class="hoc-drawer" id="hocPanel" hidden role="dialog" aria-labelledby="hocTitle">
+  <div class="hoc-head"><b id="hocTitle">📖 Học từ trang này</b><button id="hocClose" type="button" aria-label="Đóng chế độ học">✕</button></div>
+  <div class="hoc-body">
+    <p class="hoc-lead">Hạt vẫn chạy trong lúc học. Không cần camera: bấm phím <b>1</b> tim, <b>4</b> quả cầu, <b>I</b> hoa toán học, <b>0</b> thả tự do… rồi bóc lớp, vặn thử. Đang xem: <b id="hocMode">—</b></p>
+    <section>
+      <h2>Bóc lớp</h2>
+      <p class="hoc-sub">Tắt từng lớp để thấy mỗi lớp góp phần gì vào hình.</p>
+      <label class="hoc-ck"><input type="checkbox" data-hoc="dots" checked><span><b>Hạt</b> — vài nghìn chấm, mỗi chấm có một chỗ đứng trên hình đích.</span></label>
+      <label class="hoc-ck"><input type="checkbox" data-hoc="photos" checked><span><b>Thẻ ảnh</b> — các tấm ảnh xếp theo viền hình, luôn quay mặt ra ngoài.</span></label>
+      <label class="hoc-ck"><input type="checkbox" data-hoc="glow" checked><span><b>Cộng sáng</b> — chỗ nhiều hạt chồng lên nhau thì sáng rực hơn.</span></label>
+      <label class="hoc-ck"><input type="checkbox" data-hoc="jit" checked><span><b>Rung thở</b> — mỗi hạt lắc nhẹ quanh chỗ đứng cho hình "sống".</span></label>
+      <label class="hoc-ck"><input type="checkbox" data-hoc="rot" checked><span><b>Xoay khối</b> — cả khối hạt tự xoay, lắc nhẹ để thấy chiều sâu 3D.</span></label>
+    </section>
+    <section>
+      <h2>Vặn thử</h2>
+      <div class="hoc-sl"><label for="hocMorph">Tốc độ hạt về chỗ <output id="hocMorphV"></output></label>
+        <input type="range" id="hocMorph" min="0.1" max="3" step="0.1" value="1">
+        <small>Nhỏ thì hạt bay về chậm như sương tụ lại; lớn thì "bụp" thành hình ngay. Đổi hình (phím 1, 4, I…) để thấy rõ.</small></div>
+      <div class="hoc-sl"><label for="hocSize">Cỡ hạt <output id="hocSizeV"></output></label>
+        <input type="range" id="hocSize" min="0.3" max="3" step="0.1" value="1">
+        <small>Hạt to chồng lên nhau nhiều hơn nên cũng sáng hơn (vì cộng sáng).</small></div>
+      <div class="hoc-sl"><label for="hocSpin">Tốc độ xoay <output id="hocSpinV"></output></label>
+        <input type="range" id="hocSpin" min="0" max="4" step="0.1" value="1">
+        <small>Chỉ hình "tự xoay" mới quay vòng (thả tự do, quả cầu, nhẫn, hoa…). 0 = đứng im.</small></div>
+      <div class="hoc-sl"><label for="hocOe">Độ nhạy khi tay đứng yên <output id="hocOeV"></output></label>
+        <input type="range" id="hocOe" min="0.2" max="6" step="0.1" value="1.6">
+        <small>Kéo sang trái = lọc mạnh hơn: tay đứng yên hết rung nhưng lướt nhanh thì trễ hơn. Dòng dưới là phép đo thật trên bộ lọc của trang.</small></div>
+      <div class="hoc-f" id="hocFormula" aria-live="off"></div>
+      <div class="hoc-row"><button id="hocReset" type="button">↺ Về mặc định</button></div>
+    </section>
+    <section>
+      <h2>Học được gì</h2>
+      <table class="hoc-tb">
+        <thead><tr><th>Bí quyết</th><th>Ví như</th><th>Tên kỹ thuật</th><th>Dùng vào việc gì cho mình</th></tr></thead>
+        <tbody>
+          <tr><td>21 điểm khớp tay → chấm điểm 0–100% từng cử chỉ theo góc gập ngón, chọn cái cao nhất</td><td>Thầy võ nhìn khớp tay là biết thế đánh, không cần nhìn mặt</td><td>Hand landmarks + rule scoring <i>(điểm mốc bàn tay + chấm điểm theo luật)</i></td><td>Gợi ý khớp đối soát: chấm % từng cặp giao dịch ngân hàng ↔ hoá đơn, hiện 3 ứng viên cao nhất như dòng ứng viên ở góc camera</td></tr>
+          <tr><td>Đổi sang dáng mới cần ≥ 60%, giữ dáng cũ chỉ cần ≥ 42%; bỏ phiếu 8 lần rồi đợi 0,3 giây mới đổi</td><td>Đèn cảm ứng hành lang không chớp tắt khi có người đứng ở mép</td><td>Hysteresis + majority vote + debounce <i>(hai ngưỡng, bỏ phiếu, chờ chốt)</i></td><td>Nhãn "Quá hạn / Sắp tới hạn" trên dashboard công nợ không nhảy qua lại; ô tìm kiếm chỉ gọi máy chủ khi người dùng ngừng gõ</td></tr>
+          <tr><td>Đứng yên thì lọc mạnh cho hết rung, lướt nhanh thì lọc nhẹ cho khỏi trễ</td><td>Người quay phim: đứng yên thì giữ máy thật chắc, chạy theo thì nới tay</td><td>One Euro filter <i>(bộ lọc thích nghi theo tốc độ)</i></td><td>Đồ thị số dư/dòng tiền cập nhật trực tiếp không giật; thanh kéo chọn kỳ báo cáo trên Zalo Mini App mượt</td></tr>
+          <tr><td>Tay ở xa → cắt vùng quanh tay, phóng to rồi mới đưa cho mô hình, xong đổi toạ độ về khung gốc</td><td>Cầm kính lúp soi dòng chữ nhỏ trên hoá đơn</td><td>ROI crop / digital zoom <i>(cắt vùng quan tâm, phóng số)</i></td><td>Đọc hoá đơn chụp bằng điện thoại: cắt ô mã số thuế, số tiền rồi phóng to trước khi đọc chữ (OCR) → ít sai</td></tr>
+          <tr><td>Mỗi hạt có một chỗ đứng; mỗi khung chỉ đi một phần quãng còn lại, mỗi hạt một tốc độ riêng</td><td>Đàn chim bay về tổ: con nhanh con chậm, càng gần tổ càng chậm lại</td><td>Shape targets + exponential lerp <i>(đích hình + nội suy dần)</i></td><td>Màn "thanh toán thành công": hạt tụ lại thành dấu ✓; số KPI đếm mượt tới giá trị mới; khung tải (skeleton) chuyển êm sang nội dung</td></tr>
+          <tr><td>Vài nghìn hạt vẽ trong 1 lệnh card đồ hoạ; kiểu hạt (tim, sao, nốt nhạc) lấy từ 1 tấm ảnh ghép 16 ô; hình hoa/vỏ ốc sinh từ công thức toán</td><td>In nghìn con dấu bằng một tấm khuôn khắc sẵn nhiều mẫu</td><td>THREE.Points + ShaderMaterial + glyph atlas, generative math <i>(vẽ hạt bằng GPU, ảnh ghép ô, hình sinh từ công thức)</i></td><td>Nền hạt nhẹ cho landing page FinanOne; pháo giấy ăn mừng chạy mượt cả trên điện thoại yếu; màn trống/đang tải có hoạ tiết không lặp lại</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>Code tối thiểu</h2>
+      <p class="hoc-sub">Lõi của trò: hạt có chỗ đứng đích, mỗi khung trượt dần về đó (three.js r128).</p>
+      <pre class="hoc-code" id="hocCode"></pre>
+      <div class="hoc-row"><button id="hocCopy" type="button">📋 Chép</button><button id="hocMore" type="button">Mở "Xem code chính"</button></div>
+    </section>
+  </div>
+</aside>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script type="module">
@@ -1067,7 +1158,7 @@ $('zoomBtn').addEventListener('click', toggleRoi);
 
 /* ---------- One Euro filter: làm mượt điểm khớp — tay đứng yên thì lọc mạnh (hết rung), tay lướt nhanh thì lọc nhẹ (không trễ) ---------- */
 // Casiez, Roussel, Vogel (CHI 2012). minCutoff: rung khi chậm · beta: trễ khi nhanh · đơn vị toạ độ = khung hình (0–1)
-const OE_MIN = 1.6, OE_BETA = 3.0, OE_D = 1.0;
+let OE_MIN = 1.6, OE_BETA = 3.0, OE_D = 1.0;          // let: thanh "Vặn thử" của 📖 Học đổi được OE_MIN
 const oeAlpha = (cut, dt) => { const r = 2*Math.PI*cut*dt; return r/(r + 1); };
 function OneEuro(){ return {x:0, dx:0, t:-1}; }
 function oeStep(f, v, t){                          // t: giây
@@ -1252,6 +1343,8 @@ const TAN25 = Math.tan(THREE.MathUtils.degToRad(25));   // nửa góc nhìn dọ
 const FLAT_SPIN = new Set(['flower','shell','drawn','ring']);
 const angDiff = (a, b) => Math.atan2(Math.sin(b-a), Math.cos(b-a));
 let last = performance.now(), spin = 0, frames = 0, fpsT = last;
+// 📖 Học: cờ bóc lớp + hệ số vặn thử (mặc định = y như cũ)
+const HOC = {dots:true, photos:true, glow:true, jit:true, rot:true, morph:1, size:1, spin:1};
 window.__fps = 0; window.__mode = () => mode; window.__gesture = () => stable;
 // móc kiểm thử (chỉ đọc/gọi hàm, không đổi giao diện): đưa 21 điểm giả vào để xem máy phán gì
 window.__gestureTest = {
@@ -1333,7 +1426,7 @@ function frame(now){
   uni.uTint.value.lerp(tintTarget, Math.min(1, dt*3));
   const flash = mode === 'bolt' && !RM ? Math.pow(Math.max(0, Math.sin(t*5.3)*Math.sin(t*1.7 + 1)), 8) : 0; // sét nháy
   uni.uMix.value += (M.mix + flash*0.4 - uni.uMix.value)*Math.min(1, dt*(flash ? 12 : 3));
-  uni.uSize.value = BASE_SIZE*(1 + flash*0.5);
+  uni.uSize.value = BASE_SIZE*(1 + flash*0.5)*HOC.size;
 
   // phóng to/thu nhỏ cả cảnh + độ véo
   zoomCur += (zoomTarget - zoomCur)*Math.min(1, dt*5);
@@ -1368,15 +1461,15 @@ function frame(now){
 
   // xoay cả khối
   const still = mode === 'point' || mode === 'gallery' || mode === 'skeleton', flat = mode === 'point' || mode === 'skeleton';
-  if (M.spin) spin += dt*0.35*MOT; else spin = group.rotation.y - dragY;
+  if (M.spin) spin += dt*0.35*MOT*HOC.spin; else spin = group.rotation.y - dragY;
   const ry = flat ? 0 : mode === 'gallery' ? dragY : FLAT_SPIN.has(mode) ? Math.sin(ta*0.45)*0.61 + dragY  // hình phẳng: lắc ±35°, không bao giờ quay nghiêng thành vạch
     : (M.spin ? spin : Math.sin(t*0.6)*0.4*MOT) + dragY;
   const rx = flat ? 0 : (mode === 'idle' ? 0.42 : mode === 'gallery' ? 0.16 : 0.1) + dragX;
-  group.rotation.y += angDiff(group.rotation.y, ry)*Math.min(1, dt*3);
-  group.rotation.x += (rx - group.rotation.x)*Math.min(1, dt*3);
+  group.rotation.y += angDiff(group.rotation.y, HOC.rot ? ry : dragY)*Math.min(1, dt*3);
+  group.rotation.x += ((HOC.rot ? rx : dragX) - group.rotation.x)*Math.min(1, dt*3);
   if (!still) dragX *= 1 - Math.min(1, dt*0.4);
 
-  const jit = mode === 'idle' ? 0.03 : mode === 'explode' ? 0.02 : 0.012;
+  const jit = (mode === 'idle' ? 0.03 : mode === 'explode' ? 0.02 : 0.012)*(HOC.jit ? 1 : 0);
   const pc = pinchCur, animK = (mode === 'point' || mode === 'tornado' || mode === 'water' || mode === 'skeleton') ? 2.2 : 1;
   const wAmp = V.amp || 0.13, tTw = V.tw || 1, hh2 = nSK > 1 ? 63 : 0;
   for (let i = 0; i < N; i++){
@@ -1402,11 +1495,12 @@ function frame(now){
     }
     tx += Math.sin(t*0.9+s)*jit; ty += Math.cos(t*0.7+s*1.3)*jit; tz += Math.sin(t*0.8+s*0.7)*jit;
     if (snap && ty - pos[j+1] > 1){ pos[j] = tx; pos[j+1] = ty; pos[j+2] = tz; continue; } // giọt mưa rơi hết thì quay lại đỉnh, không bay ngược
-    const k = 1 - Math.exp(-dt*spd[i]*animK);
+    const k = 1 - Math.exp(-dt*spd[i]*animK*HOC.morph);
     pos[j] += (tx-pos[j])*k; pos[j+1] += (ty-pos[j+1])*k; pos[j+2] += (tz-pos[j+2])*k;
   }
   geo.attributes.position.needsUpdate = true;
-  lines.visible = styleCur === 'constellation' && LINE_OK.has(mode);
+  points.visible = HOC.dots;
+  lines.visible = HOC.dots && styleCur === 'constellation' && LINE_OK.has(mode);
   if (lines.visible){ lineMat.color.copy(uni.uTint.value); lineMat.opacity = 0.22*E; }
 
   // ảnh xếp theo viền hình đang hiện, luôn quay mặt về phía người xem
@@ -1414,7 +1508,7 @@ function frame(now){
   const C = Math.min(POOL, M.photos), lk = Math.min(1, dt*(mode === 'point' ? 9 : 6));
   group.updateMatrixWorld(true); const yBot = 1 - 2*botFrac;            // mép trên hàng nút dưới, theo toạ độ màn (-1..1)
   for (let j = 0; j < POOL; j++){
-    const p = photos[j], on = j < C && p.m.visible;
+    const p = photos[j], on = j < C && p.m.visible && HOC.photos;
     let target = 0;
     if (on){
       photoSlot(mode, j, C, t, ta, beat, E, p);
@@ -1432,10 +1526,84 @@ function frame(now){
     p.m.quaternion.copy(qInv).multiply(p.tilt);
   }
 
+  const wantB = !HOC.glow || styleCur === 'atlas' ? THREE.NormalBlending : THREE.AdditiveBlending; // 📖 lớp "cộng sáng"
+  if (mat.blending !== wantB) mat.blending = wantB;
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+
+/* ---------- 📖 Chế độ học: bóc lớp · vặn thử · học được gì · code tối thiểu ---------- */
+{
+  const panel = $('hocPanel'), btn = $('hocBtn'), vn = (v, d) => v.toFixed(d).replace('.', ',');
+  const HOC_DEF = {morph:1, size:1, spin:1, oe:1.6};
+  let hocTimer = 0;
+  const SLD = [['hocMorph','morph'], ['hocSize','size'], ['hocSpin','spin'], ['hocOe','oe']];
+  function hocRender(){
+    const m = HOC.morph, sz = HOC.size, sp = HOC.spin, dt = 1/60, v = 3.7;   // 3,7 = tốc độ trung bình của hạt (2,2–5,2)
+    const k = 1 - Math.exp(-dt*v*m), left = Math.exp(-v*m);
+    $('hocMorphV').textContent = vn(m, 1) + '×'; $('hocSizeV').textContent = vn(sz, 1) + '×';
+    $('hocSpinV').textContent = sp ? vn(sp, 1) + '×' : 'đứng im'; $('hocOeV').textContent = vn(OE_MIN, 1) + ' Hz';
+    const lap = sp ? 2*Math.PI/(0.35*MOT*sp) : 0, oe = window.__gestureTest.oneEuroDemo();
+    $('hocFormula').innerHTML =
+      `Mỗi khung: k = 1 − e<sup>−dt·tốc độ·hệ số</sup> = 1 − e<sup>−${vn(dt, 4)}·${vn(v, 1)}·${vn(m, 1)}</sup> ≈ <b>${vn(k*100, 1)}%</b> quãng còn lại · sau 1 giây còn cách đích <b>${vn(left*100, 1)}%</b><br>` +
+      `Cỡ chấm = 23 × ${vn(PR, 1)} × ${vn(sz, 1)} ÷ khoảng cách ≈ <b>${Math.round(BASE_SIZE*sz/4.2)} px</b> ở giữa cảnh<br>` +
+      `Xoay: góc += dt × 0,35 × ${vn(sp, 1)} → ${sp ? `một vòng <b>${vn(lap, 1)} giây</b>` : '<b>không xoay</b>'}<br>` +
+      `One Euro (minCutoff ${vn(OE_MIN, 1)}): tay đứng yên rung giảm <b>${oe.cut}%</b> · lướt nhanh trễ <b>${oe.lagMs} ms</b>`;
+    $('hocMode').textContent = mode ? MODES[mode].label : '—';
+  }
+  SLD.forEach(([id, key]) => $(id).addEventListener('input', e => {
+    const v = parseFloat(e.target.value); if (key === 'oe') OE_MIN = v; else HOC[key] = v; hocRender(); }));
+  panel.querySelectorAll('input[data-hoc]').forEach(c => c.addEventListener('change', () => { HOC[c.dataset.hoc] = c.checked; }));
+  $('hocReset').addEventListener('click', () => {
+    HOC.morph = HOC_DEF.morph; HOC.size = HOC_DEF.size; HOC.spin = HOC_DEF.spin; OE_MIN = HOC_DEF.oe;
+    SLD.forEach(([id, key]) => { $(id).value = HOC_DEF[key]; });
+    panel.querySelectorAll('input[data-hoc]').forEach(c => { c.checked = true; HOC[c.dataset.hoc] = true; });
+    hocRender(); showToast('↺ Về mặc định');
+  });
+  $('hocCode').textContent = [
+    '// 1) Mỗi hạt có vị trí hiện tại (pos) và chỗ đứng đích (home)',
+    'const N = 3000, pos = new Float32Array(N*3), home = new Float32Array(N*3);',
+    'const spd = Float32Array.from({length:N}, () => 2 + Math.random()*3);',
+    'const geo = new THREE.BufferGeometry();',
+    "geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));",
+    'scene.add(new THREE.Points(geo, new THREE.PointsMaterial({size:.03, color:0x39C5BB,',
+    '  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending})));',
+    '// 2) Đổi hình = chỉ ghi lại chỗ đứng (đây là trái tim)',
+    'function toHeart(){ for (let i = 0; i < N; i++){ const t = Math.random()*Math.PI*2;',
+    '  home[i*3]   = 16*Math.sin(t)**3/17;',
+    '  home[i*3+1] = (13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t))/17;',
+    '  home[i*3+2] = (Math.random() - .5)*.2; } }',
+    '// 3) Mỗi khung: hạt đi một phần quãng còn lại (càng gần càng chậm)',
+    'let last = performance.now(); toHeart();',
+    'function tick(now){ const dt = Math.min(.05, (now - last)/1000); last = now;',
+    '  for (let i = 0; i < N*3; i++){ const k = 1 - Math.exp(-dt*spd[i/3|0]);',
+    '    pos[i] += (home[i] - pos[i])*k; }',
+    '  geo.attributes.position.needsUpdate = true;',
+    '  renderer.render(scene, camera); requestAnimationFrame(tick); }',
+    'requestAnimationFrame(tick);'].join('\n');
+  $('hocCopy').addEventListener('click', () => {
+    const t = $('hocCode').textContent, ok = () => showToast('📋 Đã chép code');
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok, () => showToast('Chưa chép được — bôi đen rồi Ctrl+C'));
+    else { const r = document.createRange(); r.selectNodeContents($('hocCode')); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      try { document.execCommand('copy'); ok(); } catch (e){ showToast('Đã bôi đen — bấm Ctrl+C'); } }
+  });
+  $('hocMore').addEventListener('click', () => { const d = document.querySelector('.bottom details'); closeHoc(); d.open = true; d.querySelector('summary').focus(); });
+  function openHoc(){ panel.hidden = false; btn.setAttribute('aria-expanded', 'true'); hocRender(); clearInterval(hocTimer); hocTimer = setInterval(hocRender, 600); $('hocClose').focus(); }
+  function closeHoc(){ panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); clearInterval(hocTimer); btn.focus(); }
+  btn.addEventListener('click', () => panel.hidden ? openHoc() : closeHoc());
+  $('hocClose').addEventListener('click', closeHoc);
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !panel.hidden){ closeHoc(); return; }
+    const tg = e.target.tagName;
+    if ((e.key === 'l' || e.key === 'L') && !(tg === 'INPUT' && !/^(range|checkbox|radio|button)$/.test(e.target.type)) && tg !== 'SELECT' && tg !== 'TEXTAREA' && !e.ctrlKey && !e.metaKey && !e.altKey){
+      e.preventDefault(); panel.hidden ? openHoc() : closeHoc(); }
+  });
+  window.__hoc = {HOC, rotY: () => group.rotation.y, size: () => uni.uSize.value, blend: () => mat.blending, dotsOn: () => points.visible,
+    photoScale: () => photos.reduce((a, p) => a + p.s, 0),
+    dist: () => { let d = 0; for (let i = 0; i < N*3; i++) d += Math.abs(home[i] - pos[i]); return d/N; },
+    wobble: () => pos[0] + pos[1] + pos[2]};
+}
 </script>
 </body>
 </html>
