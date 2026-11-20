@@ -16,8 +16,8 @@
   .title h1{font-size:clamp(17px,2.4vw,26px);font-weight:700;text-shadow:0 0 16px rgba(57,197,187,.75)}
   .title p{font-size:13px;color:var(--mute);margin-top:4px;max-width:470px;line-height:1.45}
   .cam{position:fixed;right:16px;top:14px;width:228px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;backdrop-filter:blur(6px)}
-  .cam .view{position:relative;aspect-ratio:4/3;background:#000}
-  .cam video,.cam canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+  .cam .view{position:relative;aspect-ratio:16/9;background:#000}
+  .cam video,.cam canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:scaleX(-1)}
   .cam video{opacity:0;transition:opacity .3s}
   .cam.on video{opacity:.85}
   .cam .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;text-align:center;font-size:12px;color:var(--mute)}
@@ -89,7 +89,7 @@
 <div class="title">
   <h1>Giơ tay, hạt hoá hình</h1>
   <p class="start"><b>Bắt đầu:</b> bấm <b>Bật camera</b> → cho phép → giơ tay trước camera. Muốn có ảnh bay quanh thì bấm <b>Thêm ảnh</b> (ảnh chỉ nằm trên máy bạn).</p>
-  <p>16 hình theo tay: 🫶 tim · ✌️ số 2 · 3 hay 4 ngón ra số 3, số 4 · ✋ nổ · ✊ cầu · 👍 sao · ☝️ vệt sáng · 👌 nhẫn · 🤘 tia sét · 🤙 sóng · 🤟 chữ MIKU · 🤏 véo nhỏ · 👎 mưa · 👋 vẫy ra lốc xoáy · quẹt tay đổi ảnh · hai tay kéo ra/khép vào để phóng to/thu nhỏ. Còn thiếu dáng nào thì 🎓 dạy máy.</p>
+  <p>21 hình theo tay: 🫶 tim · ✌️ số 2 · 3 hay 4 ngón ra số 3, số 4 · ✋ nổ · ✊ cầu · 👍 sao · ☝️ vệt sáng · 👌 nhẫn · 🤘 tia sét · 🤙 sóng · 🤟 chữ MIKU · 🤏 véo nhỏ · 👎 mưa · 👋 vẫy ra lốc xoáy · quẹt tay đổi ảnh · hai tay kéo ra/khép vào để phóng to/thu nhỏ · 👊👊 hai nắm tay ra hình toán mới · ☝️ vẽ trong không khí rồi ✊ nắm lại thành hình bạn vẽ · ✋ giữ yên 2,5 giây ra bàn tay ánh sáng. Mỗi lần ra hình một kiểu khác. Còn thiếu dáng nào thì 🎓 dạy máy.</p>
 </div>
 
 <div class="cam" id="camBox">
@@ -101,7 +101,7 @@
       <button class="primary" id="camBtn" type="button">Bật camera</button>
     </div>
   </div>
-  <div class="lab"><b id="gLabel">Chưa thấy tay</b><span id="camState">dùng phím 0–9, Q–U</span></div>
+  <div class="lab"><b id="gLabel">Chưa thấy tay</b><span id="camState">dùng phím 0–9, Q–U, I O P D H</span></div>
   <div class="conf" aria-hidden="true"><i id="confBar"></i></div>
   <div class="cands" id="cands" aria-live="off">Máy đang chờ tay…</div>
   <div class="cands mp" id="mpLine" aria-live="off">🤖 MediaPipe chưa chạy</div>
@@ -142,15 +142,23 @@
     <button class="chip" data-m="rain" type="button"><kbd>T</kbd>👎 Mưa</button>
     <button class="chip" data-m="tornado" type="button"><kbd>Y</kbd>👋 Lốc xoáy</button>
     <button class="chip" data-m="gallery" type="button"><kbd>U</kbd>👉 Xoay ảnh</button>
+    <button class="chip" data-m="flower" type="button"><kbd>I</kbd>🌻 Hoa toán học</button>
+    <button class="chip" data-m="attractor" type="button"><kbd>O</kbd>🌀 Dải lụa</button>
+    <button class="chip" data-m="shell" type="button"><kbd>P</kbd>🐚 Vỏ ốc</button>
+    <button class="chip" data-m="drawn" type="button"><kbd>D</kbd>✍️ Hình bạn vẽ</button>
+    <button class="chip" data-m="skeleton" type="button"><kbd>H</kbd>🖐️ Bàn tay sáng</button>
   </div>
   <div class="tools">
     <label class="btn" title="Chọn ảnh trong máy — ảnh không rời khỏi máy">🖼️ Thêm ảnh<input id="file" type="file" accept="image/*" multiple></label>
     <button id="photoToggle" type="button" aria-pressed="true">Ảnh: Bật</button>
     <button id="photoClear" type="button" hidden>Xoá ảnh của tôi</button>
     <button id="teachBtn" type="button">🎓 Dạy máy</button>
+    <button id="styleBtn" type="button" title="Phím K — đổi loại hạt dựng hình">✨ Kiểu hạt: Tự chọn theo hình</button>
+    <button id="varBtn" type="button" title="Phím cách — đổi biến thể của hình đang hiện">🎲 Biến thể khác</button>
+    <button id="zoomBtn" type="button" aria-pressed="true" title="Phím Z — camera tự phóng vào tay khi bạn đứng xa">🔭 Tự phóng xa: Bật</button>
     <span id="photoCount">ảnh mẫu</span>
   </div>
-  <p class="note">🔒 Video xử lý ngay trong trình duyệt trên máy bạn — <b>không gửi hình đi đâu</b>. Không có camera? Bấm phím <b>1–9, Q–U</b> (0 = thả tự do), <b>← →</b> đổi ảnh, <b>+ / −</b> phóng to thu nhỏ, <b>kéo chuột</b> để xoay, chế độ ☝️ thì di chuột.</p>
+  <p class="note">🔒 Video xử lý ngay trong trình duyệt trên máy bạn — <b>không gửi hình đi đâu</b>. Không có camera? Bấm phím <b>1–9, Q–U</b> (0 = thả tự do), <b>I O P</b> hình toán, <b>D</b> hình bạn vẽ, <b>H</b> bàn tay sáng, <b>phím cách</b> đổi biến thể, <b>K</b> đổi kiểu hạt, <b>← →</b> đổi ảnh, <b>+ / −</b> phóng to thu nhỏ, <b>kéo chuột</b> để xoay. Chế độ ☝️: di chuột là vệt sáng, giữ chuột kéo là vẽ, thả tay 1 giây thì hạt xếp thành hình bạn vẽ.</p>
   <details>
     <summary>Xem code chính</summary>
     <ol>
@@ -164,6 +172,11 @@
       <li>Chuyển động: máy nhớ vị trí lòng bàn tay trong khoảng 1 giây. Đổi chiều trái-phải từ 3 lần trở lên = 👋 vẫy; một cú lướt nhanh một chiều rồi dừng = quẹt (đổi tấm ảnh ở giữa); hai tay xoè, khoảng cách hai tay so với lúc bắt đầu = mức phóng to.</li>
       <li>🎓 Dạy máy: mỗi lần ghi lấy khoảng 40 "ảnh chụp dáng tay" — 21 điểm được dời về cổ tay, chia cỡ bàn tay, xoay cho cổ tay → gốc ngón giữa luôn hướng lên, cộng 5 cờ ngón. Lúc nhận dạng, máy tìm 5 mẫu giống nhất (kNN); đủ gần thì theo dáng bạn dạy. Mẫu lưu trong trình duyệt máy bạn (localStorage).</li>
       <li>Mỗi hạt có một "chỗ đứng" trên hình đích; mỗi khung hình nó trượt dần tới đó với tốc độ riêng. Sóng, mưa, lốc xoáy thì chỗ đứng tự chạy theo thời gian. Ảnh xếp cách đều theo viền hình, luôn quay mặt về phía bạn. Three.js vẽ vài nghìn hạt bằng card đồ hoạ, chế độ cộng sáng.</li>
+      <li>Mỗi lần ra hình là một <b>biến thể mới</b>: tim béo/gầy/nghiêng, sao 5–8 cánh, nhẫn to/nhỏ, chữ số nghiêng, màu lệch nhẹ. Giữ cử chỉ quá 7 giây thì hình tự chuyển sang biến thể khác; phím cách đổi ngay.</li>
+      <li><b>Hình toán</b> (👊👊 hoặc phím I, O, P): hoa hướng dương xoắn theo góc vàng, hoa hồng toán học, vòng spirograph; "dải lụa" là đường đi của một phép lặp hỗn loạn; vỏ ốc, sao biển từ công thức siêu hình (superformula). Tham số chọn ngẫu nhiên nên gần như không lặp lại.</li>
+      <li><b>Vẽ trong không khí</b>: ở chế độ ☝️ máy ghi lại đường đầu ngón trỏ (bỏ điểm quá sát nhau), nắm tay ✊ là chốt — hạt bay về xếp đúng nét vẽ, biến thể sau có thể thành hoa văn đối xứng 5–8 cánh. <b>Bàn tay ánh sáng</b>: hạt bám theo 21 khớp và các đốt ngón của tay anh.</li>
+      <li><b>Đứng xa vẫn nhận</b>: camera xin khung rộng 1280×720; khi chưa thấy tay, máy lần lượt soi cả khung rồi phóng vào giữa, trái, phải; thấy tay rồi thì cắt một vùng quanh tay (gấp ~3 lần cỡ tay) phóng to đưa cho mô hình, rồi đổi toạ độ về khung gốc. Khung nét đứt trong ô camera là vùng máy đang soi, 🔭 xN là mức phóng.</li>
+      <li><b>Kiểu hạt</b>: cùng một chương trình vẽ hạt, mỗi hạt có thể là chấm, tim, sao, cánh hoa, giọt nước, kim cương, vòng, giấy màu, nốt nhạc/chữ (lấy từ một tấm ảnh ghép 16 ô) hoặc chòm sao nối dây. "Tự chọn theo hình" để mỗi hình tự lấy kiểu hợp, mỗi hạt tự xoay một góc riêng.</li>
     </ol>
   </details>
 </div>
@@ -220,23 +233,76 @@ const geo = new THREE.BufferGeometry();
 geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
 geo.setAttribute('aColor', new THREE.BufferAttribute(col, 3));
 geo.setAttribute('aRand', new THREE.BufferAttribute(rnd, 1));
+const cell = new Float32Array(N);                  // kiểu hạt: ô trong ảnh ghép (nốt nhạc/chữ); -1 = hạt này vẫn là chấm tròn
+geo.setAttribute('aCell', new THREE.BufferAttribute(cell, 1));
+// ảnh ghép 4×4 ô: nốt nhạc, chữ, emoji — chữ vẽ màu trắng để tô theo màu hạt, emoji giữ màu gốc
+const GLYPHS = ['♪','♫','♬','ミ','ク','愛','星','夢','❤️','💖','🌸','⭐','✨','💧','💙','🎵'];
+const AT = document.createElement('canvas'); AT.width = AT.height = 256;
+{ const g = AT.getContext('2d'); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff';
+  GLYPHS.forEach((s, k) => { const x = (k % 4)*64 + 32, y = Math.floor(k/4)*64 + 34;
+    g.font = k < 8 ? '900 46px system-ui,"Segoe UI Symbol","Yu Gothic","Noto Sans JP",sans-serif' : '44px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+    g.fillText(s, x, y); }); }
+const atlasTex = new THREE.CanvasTexture(AT); atlasTex.generateMipmaps = false; atlasTex.minFilter = THREE.LinearFilter;
 const BASE_SIZE = 23*PR;
-const uni = {uSize:{value:BASE_SIZE}, uTime:{value:0}, uTint:{value:new THREE.Color('#39C5BB')}, uMix:{value:0}};
+const uni = {uSize:{value:BASE_SIZE}, uTime:{value:0}, uTint:{value:new THREE.Color('#39C5BB')}, uMix:{value:0},
+  uStyle:{value:0}, uShapeScale:{value:1}, uSpin:{value:0}, uAtlas:{value:atlasTex}};
 const mat = new THREE.ShaderMaterial({
   uniforms: uni, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-  vertexShader: `attribute vec3 aColor; attribute float aRand; uniform float uSize; uniform float uTime;
-    varying vec3 vColor; varying float vA; varying float vR;
+  vertexShader: `attribute vec3 aColor; attribute float aRand; attribute float aCell; uniform float uSize; uniform float uTime; uniform float uShapeScale;
+    varying vec3 vColor; varying float vA; varying float vR; varying float vPx; varying float vCell;
     void main(){ vec4 mv = modelViewMatrix*vec4(position,1.0); gl_Position = projectionMatrix*mv;
-      gl_PointSize = uSize*(0.35+aRand*0.75)/(-mv.z);
+      float sc = aCell < -0.5 ? 1.0 : uShapeScale;
+      gl_PointSize = uSize*sc*(0.35+aRand*0.75)/(-mv.z); vPx = gl_PointSize; vCell = aCell;
       vColor = aColor; vR = aRand; vA = 0.55+0.45*sin(uTime*2.2+aRand*40.0); }`,
-  fragmentShader: `uniform vec3 uTint; uniform float uMix; varying vec3 vColor; varying float vA; varying float vR;
-    void main(){ vec2 c = gl_PointCoord-0.5; float d = length(c); if(d>0.5) discard;
-      float a = smoothstep(0.5,0.0,d); a *= a;
+  // mỗi kiểu hạt là một hàm khoảng cách (SDF) vẽ trong ô vuông của hạt; xoay theo góc riêng từng hạt
+  fragmentShader: `uniform vec3 uTint; uniform float uMix; uniform float uStyle; uniform float uTime; uniform float uSpin; uniform sampler2D uAtlas;
+    varying vec3 vColor; varying float vA; varying float vR; varying float vPx; varying float vCell;
+    float dot2(vec2 v){ return dot(v,v); }
+    float sdHeart(vec2 p){ p.x = abs(p.x); if (p.y+p.x > 1.0) return sqrt(dot2(p-vec2(0.25,0.75)))-0.35355;
+      return sqrt(min(dot2(p-vec2(0.0,1.0)), dot2(p-0.5*max(p.x+p.y,0.0))))*sign(p.x-p.y); }
+    float sdStar5(vec2 p, float r, float rf){ const vec2 k1 = vec2(0.809017,-0.587785); vec2 k2 = vec2(-k1.x,k1.y);
+      p.x = abs(p.x); p -= 2.0*max(dot(k1,p),0.0)*k1; p -= 2.0*max(dot(k2,p),0.0)*k2; p.x = abs(p.x); p.y -= r;
+      vec2 ba = rf*vec2(-k1.y,k1.x)-vec2(0.0,1.0); float h = clamp(dot(p,ba)/dot(ba,ba),0.0,r);
+      return length(p-ba*h)*sign(p.y*ba.x-p.x*ba.y); }
+    void main(){
       vec3 col = mix(vColor, uTint, uMix*(0.55+0.45*vR));
-      gl_FragColor = vec4(col, a*vA); }`
+      int s = int(uStyle+0.5);
+      if (s == 0 || vCell < -0.5){ vec2 c = gl_PointCoord-0.5; float d = length(c); if (d > 0.5) discard;
+        float a = smoothstep(0.5,0.0,d); a *= a; gl_FragColor = vec4(col, a*vA); return; }
+      vec2 q = gl_PointCoord-0.5; q.y = -q.y;
+      float an = s == 9 ? 0.0 : vR*6.2832*uSpin + uTime*(vR-0.5)*2.0*uSpin + (1.0-uSpin)*0.35*sin(uTime*1.3+vR*40.0);
+      float cs = cos(an), sn = sin(an); vec2 p = vec2(cs*q.x - sn*q.y, sn*q.x + cs*q.y);
+      if (s == 8){ vec2 cu = p+0.5; if (cu.x < 0.0 || cu.x > 1.0 || cu.y < 0.0 || cu.y > 1.0) discard;
+        cu = clamp(cu, 0.03, 0.97);
+        vec2 uv = vec2((mod(vCell,4.0)+cu.x)/4.0, (3.0-floor(vCell/4.0)+cu.y)/4.0);
+        vec4 t = texture2D(uAtlas, uv); if (t.a < 0.05) discard;
+        float sat = max(max(t.r,t.g),t.b) - min(min(t.r,t.g),t.b);
+        vec3 c = sat < 0.1 ? col*1.25*t.r : mix(t.rgb, uTint, uMix*0.2);
+        gl_FragColor = vec4(c, t.a*(0.45+0.55*vA)); return; }
+      float d;
+      if (s == 1) d = sdHeart(p*2.2+vec2(0.0,0.55))/2.2;                                   // tim
+      else if (s == 2) d = sdStar5(p, 0.42, 0.45);                                          // sao 5 cánh
+      else if (s == 3){ d = length(p*vec2(1.7,1.0))-0.36; d = max(d, -(length(p-vec2(0.0,0.38))-0.1)); } // cánh hoa có khía
+      else if (s == 4) d = length(vec2(p.x*(1.0+2.4*max(p.y,0.0)), p.y+0.06))-0.28;           // giọt nước
+      else if (s == 5) d = sqrt(abs(p.x))+sqrt(abs(p.y))-0.62;                              // lấp lánh 4 tia
+      else if (s == 6) d = abs(p.x)+abs(p.y)*0.8-0.38;                                      // kim cương
+      else if (s == 7) d = abs(length(p)-0.3)-0.06;                                         // vòng nhỏ
+      else if (s == 9) d = max(abs(p.x)-0.035, abs(p.y)-0.46);                              // vệt mưa
+      else d = max(abs(p.x), abs(p.y)*1.6)-0.3;                                             // giấy màu
+      float fw = 1.5/max(vPx,1.0);
+      float a = 1.0-smoothstep(-fw,fw,d); a += 0.35*exp(-max(d,0.0)*14.0);
+      if (a < 0.01) discard;
+      col += 0.25*(1.0-smoothstep(0.0,0.12,-d));
+      gl_FragColor = vec4(col, min(a,1.0)*vA); }`
 });
 const points = new THREE.Points(geo, mat);
 group.add(points);
+// chòm sao: dây nối các hạt gần nhau, dùng chung mảng vị trí với hạt (hạt chạy thì dây chạy theo, không tốn thêm)
+const lineGeo = new THREE.BufferGeometry();
+lineGeo.setAttribute('position', geo.attributes.position);
+const lineMat = new THREE.LineBasicMaterial({color:0x39C5BB, transparent:true, opacity:.22, blending:THREE.AdditiveBlending, depthWrite:false});
+const lines = new THREE.LineSegments(lineGeo, lineMat);
+lines.frustumCulled = false; lines.visible = false; group.add(lines);
 
 /* ---------- Hình đích ---------- */
 // đường gồm nhiều nét (nhấc bút giữa các nét); at(u) chia đều theo độ dài, trả về 1 mảng dùng lại (không tạo mới)
@@ -252,9 +318,34 @@ function path(strokes){
     const c0 = lo ? cum[lo-1] : 0, k = (t-c0) / ((cum[lo]-c0) || 1);
     out[0] = ax[lo] + (bx[lo]-ax[lo])*k; out[1] = ay[lo] + (by[lo]-ay[lo])*k; return out; } };
 }
-const heartXY = t => [16*Math.pow(Math.sin(t),3)/17, (13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))/17 + 0.12];
+/* ---------- Biến thể: mỗi lần ra hình là một bộ số mới (V) — tim béo/gầy/nghiêng, sao 5–8 cánh, chữ nghiêng… ---------- */
+const pick = a => a[Math.floor(R()*a.length)];
+let V = {hue:0, sh:0, sc:1};
+function variant(m, first){
+  const v = {hue: rr(-.07,.07), sh: 0, sc: 1};
+  switch (m){
+    case 'heart': Object.assign(v, {sx:rr(.85,1.15), sy:rr(.9,1.1), tilt:rr(-.25,.25), lobe:rr(-.3,.3), fill:pick(['rim','solid','shells2'])}); break;
+    case 'star': Object.assign(v, {k:pick([5,5,6,7,8]), inner:rr(.3,.6), twist:rr(-.4,.4)}); break;
+    case 'ring': Object.assign(v, {r:rr(.62,.95), tube:rr(.04,.16), gems:pick([0,1,3])}); break;
+    case 'two': case 'three': case 'four': case 'bolt': case 'miku': Object.assign(v, {sh:rr(-.28,.28), th:rr(.04,.1), sc:rr(.9,1.08)}); break;
+    case 'fist': case 'pinch': Object.assign(v, {r:rr(.6,.82), bands:pick([0,0,3,5,7])}); break;
+    case 'idle': Object.assign(v, {arms:pick([2,3,4,5]), tw:rr(1,2.4)}); break;
+    case 'water': Object.assign(v, {lanes:pick([3,4,5,6]), amp:rr(.08,.2)}); break;
+    case 'tornado': v.tw = rr(.7,1.3); break;
+    case 'flower': v.fam = pick(['phyllo','rose','spiro']); break;
+    case 'attractor': v.fam = pick(['clifford','dejong','lorenz']); break;
+    case 'drawn': Object.assign(v, first ? {kal:1, mir:false} : {kal:pick([1,5,6,8]), mir:R() < .5}); break;
+  }
+  return v;
+}
+const shX = (x, y) => x*V.sc + y*V.sh;              // chữ/số nghiêng theo biến thể
+function heartXY(t, v){
+  const sx = v.sx || 1, sy = v.sy || 1, lobe = v.lobe || 0, tl = v.tilt || 0;
+  const x = 16*Math.pow(Math.sin(t),3)/17*sx, y = ((13*Math.cos(t)-(5+5*lobe)*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))/17 + 0.12)*sy;
+  return [x*Math.cos(tl) - y*Math.sin(tl), x*Math.sin(tl) + y*Math.cos(tl)];
+}
 // viền tim đo theo độ dài cung: chia đều theo t thì ảnh dồn cục ở chỗ lõm trên + mũi nhọn dưới
-const HEART = path([Array.from({length:401}, (_, i) => heartXY(i/400*TAU))]);
+let HEART = path([Array.from({length:401}, (_, i) => heartXY(i/400*TAU, V))]);
 const TWO = (() => { const p = [];
   for (let i = 0; i <= 60; i++){ const a = Math.PI*0.95 - i/60*Math.PI*1.25; p.push([0.48*Math.cos(a), 0.34+0.44*Math.sin(a)]); }
   const e = p[p.length-1];
@@ -267,10 +358,132 @@ const DIGIT3 = (() => { const a1 = [], a2 = [];
   for (let i = 0; i <= 55; i++){ const a = Math.PI*0.5 - i/55*Math.PI*1.35; a2.push([0.46*Math.cos(a), -0.42+0.44*Math.sin(a)]); }
   return path([a1, [[-0.18, 0.02], [0.02, 0.02]], a2]); })();
 const DIGIT4 = path([[[0.22, 0.86], [-0.54, -0.32], [0.56, -0.32]], [[0.22, 0.86], [0.22, -0.86]]]);
-const STARV = []; for (let k = 0; k < 10; k++){ const a = Math.PI/2 + k*TAU/10, r = k%2 ? 0.42 : 1; STARV.push([r*Math.cos(a), r*Math.sin(a)-0.04]); }
-const STAR = path([[...STARV, STARV[0]]]);
+const STARV = []; let STAR = null;
+function buildStar(k, inner, twist){
+  STARV.length = 0;
+  for (let q = 0; q < 2*k; q++){ const a = Math.PI/2 + q*Math.PI/k + (q%2 ? twist*Math.PI/k : 0), r = q%2 ? inner : 1; STARV.push([r*Math.cos(a), r*Math.sin(a)-0.04]); }
+  STAR = path([[...STARV, STARV[0]]]);
+}
+buildStar(5, 0.42, 0);
 const BOLTV = [[0.16,0.95],[-0.44,-0.02],[-0.06,-0.02],[-0.26,-0.95],[0.44,0.16],[0.04,0.16],[0.34,0.95]];
 const BOLT = path([[...BOLTV, BOLTV[0]]]);
+
+/* ---------- Hình toán học: tính sẵn N điểm vào GB khi vào chế độ ---------- */
+const GB = new Float32Array(N*3);
+function normGB(){                                 // dời tâm về giữa, co cho vừa bán kính 1
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, z0 = 1e9, z1 = -1e9;
+  for (let i = 0; i < N*3; i += 3){ const x = GB[i], y = GB[i+1], z = GB[i+2];
+    if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; if (z < z0) z0 = z; if (z > z1) z1 = z; }
+  const cx = (x0+x1)/2, cy = (y0+y1)/2, cz = (z0+z1)/2, s = 1.9/Math.max(x1-x0, y1-y0, 1e-6);
+  for (let i = 0; i < N*3; i += 3){ GB[i] = (GB[i]-cx)*s; GB[i+1] = (GB[i+1]-cy)*s; GB[i+2] = (GB[i+2]-cz)*s; }
+}
+function fillPath(P, keep, depth){                 // keep: phần hạt nằm đúng nét, còn lại lấp vào trong
+  for (let i = 0; i < N; i++){ const p = P.at(R()), f = R() < keep ? 1 : Math.sqrt(R());
+    GB[i*3] = p[0]*f; GB[i*3+1] = p[1]*f; GB[i*3+2] = rr(-depth, depth)*(1.2-f); }
+}
+function buildFlower(v){
+  if (v.fam === 'phyllo'){                         // hướng dương: mỗi hạt lệch góc vàng ~137,5°
+    const ga = (137.508 + rr(-.35,.35))*Math.PI/180, pet = pick([0,5,6,8,12]), dome = rr(-.45,.55);
+    for (let i = 0; i < N; i++){ const r = Math.sqrt((i+.5)/N), a = i*ga, w = pet ? 0.82 + 0.18*Math.abs(Math.cos(pet*a/2)) : 1;
+      GB[i*3] = Math.cos(a)*r*w; GB[i*3+1] = Math.sin(a)*r*w; GB[i*3+2] = dome*(1-r*r); }
+  } else if (v.fam === 'rose'){                    // hoa hồng toán học r = cos(kθ), k = n/d
+    const n = 2 + Math.floor(R()*8), d = 1 + Math.floor(R()*4), T = d*Math.PI*((n*d) % 2 ? 1 : 2), pts = [];
+    for (let q = 0; q <= 1600; q++){ const t = q/1600*T, r = Math.cos(n/d*t); pts.push([r*Math.cos(t), r*Math.sin(t)]); }
+    fillPath(path([pts]), 0.75, 0.25);
+  } else {                                         // spirograph (bánh răng lăn trong vòng)
+    const b = pick([5,7,8,9,11]), a = 1 + Math.floor(R()*(b-1)), r = a/b, dd = rr(.4,1.1)*r, pts = [];
+    for (let q = 0; q <= 2400; q++){ const t = q/2400*TAU*a;
+      pts.push([(1-r)*Math.cos(t) + dd*Math.cos((1-r)/r*t), (1-r)*Math.sin(t) - dd*Math.sin((1-r)/r*t)]); }
+    fillPath(path([pts]), 0.9, 0.12);
+  }
+  normGB();
+}
+function buildAttractor(v){                         // "dải lụa": vết của một phép lặp hỗn loạn, thử lại nếu ra cục điểm
+  for (let tryN = 0; tryN < 6; tryN++){
+    if (v.fam === 'lorenz'){
+      const s = 10*rr(.85,1.15), rh = 28*rr(.9,1.1), be = 8/3, dt = .006; let x = .1, y = 0, z = 0;
+      for (let q = 0; q < 800; q++){ const dx = s*(y-x), dy = x*(rh-z)-y, dz = x*y-be*z; x += dx*dt; y += dy*dt; z += dz*dt; }
+      for (let i = 0; i < N; i++){ for (let q = 0; q < 2; q++){ const dx = s*(y-x), dy = x*(rh-z)-y, dz = x*y-be*z; x += dx*dt; y += dy*dt; z += dz*dt; }
+        GB[i*3] = x; GB[i*3+1] = z; GB[i*3+2] = y*0.6; }
+      break;
+    }
+    const sg = () => (R() < .5 ? -1 : 1);
+    const a = sg()*rr(1.2,2.1), b = sg()*rr(1.2,2.1), c = sg()*rr(.5,1.6), d = sg()*rr(.5,1.6);
+    let x = .1, y = .1;
+    for (let q = 0; q < 200; q++){ const nx = v.fam === 'clifford' ? Math.sin(a*y)+c*Math.cos(a*x) : Math.sin(a*y)-Math.cos(b*x);
+      y = v.fam === 'clifford' ? Math.sin(b*x)+d*Math.cos(b*y) : Math.sin(c*x)-Math.cos(d*y); x = nx; }
+    const seen = new Set();
+    for (let i = 0; i < N; i++){ const px = x, py = y;
+      const nx = v.fam === 'clifford' ? Math.sin(a*y)+c*Math.cos(a*x) : Math.sin(a*y)-Math.cos(b*x);
+      y = v.fam === 'clifford' ? Math.sin(b*x)+d*Math.cos(b*y) : Math.sin(c*x)-Math.cos(d*y); x = nx;
+      GB[i*3] = x; GB[i*3+1] = y; GB[i*3+2] = 0.35*Math.sin(px*py*1.3);
+      seen.add(Math.floor(x*6)*100 + Math.floor(y*6)); }
+    if (seen.size >= 120) break;                     // đủ trải rộng (không sụp về vài điểm)
+  }
+  normGB();
+}
+function buildShell(){                             // superformula: vỏ ốc, sao biển, lá, bông tuyết…
+  const m = pick([3,4,5,6,7,8,10,12]), n1 = rr(.25,4), n2 = rr(.3,4), n3 = R() < .5 ? n2 : rr(.3,4), layers = pick([1,2,3]), dome = R() < .4;
+  const rf = f => { const r = Math.pow(Math.pow(Math.abs(Math.cos(m*f/4)), n2) + Math.pow(Math.abs(Math.sin(m*f/4)), n3), -1/n1); return isFinite(r) ? Math.min(r, 6) : 0; };
+  const strokes = [];
+  for (let L = 0; L < layers; L++){ const k = 1 - L*0.32, rot = L*Math.PI/m, s = [];
+    for (let q = 0; q <= 720; q++){ const f = q/720*TAU, r = rf(f)*k; s.push([r*Math.cos(f+rot), r*Math.sin(f+rot)]); }
+    strokes.push(s); }
+  fillPath(path(strokes), 0.72, 0.2);
+  if (dome) for (let i = 0; i < N*3; i += 3) GB[i+2] = 0.12*(GB[i]*GB[i] + GB[i+1]*GB[i+1]);
+  normGB();
+}
+
+/* ---------- Vẽ trong không khí: nét đầu ngón trỏ (hoặc kéo chuột) thành hình ---------- */
+let STROKES = [], curStroke = null, strokeN = 0, penDown = false, drawTimer = 0;
+let DRAWN_RAW = [Array.from({length:120}, (_, i) => { const a = i/119*TAU*2.6, r = 0.12 + 0.82*i/119; return [r*Math.cos(a), r*Math.sin(a)]; })]; // chưa vẽ gì: vòng xoắn mẫu
+let DRAWN = path(DRAWN_RAW);
+function drewOnPurpose(){                          // nét đủ to (chéo > 0,6) và vẽ hơn 1,2 giây — ☝️→✊ nhanh vẫn ra quả cầu
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, t0 = 1e15, t1 = 0;
+  for (const s of STROKES) for (const p of s){ if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; if (p[2] < t0) t0 = p[2]; if (p[2] > t1) t1 = p[2]; }
+  return Math.hypot(x1-x0, y1-y0) > 0.6 && t1 - t0 > 1200;
+}
+function finalizeDrawing(trimMs){                  // chốt nét: bỏ đoạn cuối lúc tay đang nắm lại, co về khung [-1,1]
+  if (strokeN < 25) return false;
+  let tEnd = 0; for (const s of STROKES) for (const p of s) if (p[2] > tEnd) tEnd = p[2];
+  // bỏ đoạn đầu nét nhảy xa bất thường (con trỏ còn ở chỗ cũ lúc vừa bấm/chạm) — bước > 4 lần bước trung vị
+  const cut = s => { const d = []; for (let i = 1; i < s.length; i++) d.push(Math.hypot(s[i][0]-s[i-1][0], s[i][1]-s[i-1][1]));
+    const med = d.slice().sort((x, y) => x - y)[d.length >> 1] || 0; let k = 0;
+    while (k < Math.min(8, d.length) && d.slice(0, 8).some((v, j) => j >= k && v > 4*med)) k++;
+    return s.slice(k); };
+  const S = STROKES.map(s => cut(s.filter(p => p[2] <= tEnd - trimMs))).filter(s => s.length >= 2);
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, n = 0;
+  for (const s of S) for (const p of s){ n++; if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }
+  if (n < 20) return false;
+  const cx = (x0+x1)/2, cy = (y0+y1)/2, k = 1.9/Math.max(x1-x0, y1-y0, 0.05);
+  DRAWN_RAW = S.map(s => s.map(p => [(p[0]-cx)*k, (p[1]-cy)*k]));
+  return true;
+}
+function buildDrawn(v){                            // biến thể: nguyên nét · đối xứng cánh bướm · hoa văn K cánh
+  let S = DRAWN_RAW;
+  if (v.kal > 1){ S = [];
+    for (let c = 0; c < v.kal; c++){ const a = c*TAU/v.kal, ca = Math.cos(a), sa = Math.sin(a), f = v.mir && c % 2 ? -1 : 1;
+      for (const s of DRAWN_RAW) S.push(s.map(p => { const x = p[0]*0.42*f, y = p[1]*0.42 + 0.52; return [x*ca - y*sa, x*sa + y*ca]; })); } }
+  else if (v.mir){ S = []; for (const s of DRAWN_RAW){ S.push(s.map(p => [p[0]*0.5 + 0.5, p[1]])); S.push(s.map(p => [-p[0]*0.5 - 0.5, p[1]])); } }
+  DRAWN = path(S);
+}
+function rebuildShapes(m){
+  if (m === 'heart') HEART = path([Array.from({length:401}, (_, i) => heartXY(i/400*TAU, V))]);
+  else if (m === 'star') buildStar(V.k, V.inner, V.twist);
+  else if (m === 'flower') buildFlower(V);
+  else if (m === 'attractor') buildAttractor(V);
+  else if (m === 'shell') buildShell();
+  else if (m === 'drawn') buildDrawn(V);
+}
+
+/* ---------- Bàn tay ánh sáng: mỗi hạt bám 1 đốt ngón (hoặc 1 khớp) ---------- */
+const BA = new Uint8Array(21), BB2 = new Uint8Array(21);  // điền sau khi có BONES
+const boneOf = new Uint8Array(N), boneU = new Float32Array(N);
+for (let i = 0; i < N; i++){ boneOf[i] = R() < .16 ? 21 + (i % 21) : i % 21; boneU[i] = R(); }
+// dáng tay mẫu khi chưa có camera (toạ độ khung hình 0–1, giống điểm khớp MediaPipe)
+const TPL = [[.50,.86],[.42,.80],[.36,.72],[.32,.65],[.29,.58],[.44,.60],[.43,.49],[.425,.42],[.42,.35],[.50,.59],[.50,.47],[.50,.39],[.50,.32],
+  [.56,.60],[.57,.49],[.575,.42],[.58,.36],[.61,.63],[.63,.55],[.645,.50],[.66,.45]].map(p => ({x:p[0], y:p[1], z:0}));
+const SKP = new Float32Array(2*21*3); let nSK = 1;
 function inPoly(x, y, V){ let c = false;
   for (let i = 0, j = V.length-1; i < V.length; j = i++){ const a = V[i], b = V[j];
     if ((a[1] > y) !== (b[1] > y) && x < (b[0]-a[0])*(y-a[1])/(b[1]-a[1]) + a[0]) c = !c; }
@@ -290,33 +503,44 @@ function mikuPts(){
 }
 
 const gen = {
-  heart(){ const t = R()*TAU, [x,y] = heartXY(t), s = R() < .7 ? 1+rr(-.03,.03) : Math.sqrt(R());
+  heart(){ const t = R()*TAU, [x,y] = heartXY(t, V), f = V.fill;
+    const s = f === 'solid' ? (R() < .35 ? 1 : Math.sqrt(R())) : f === 'shells2' ? (R() < .55 ? 1 : 0.6)*(1+rr(-.03,.03)) : R() < .7 ? 1+rr(-.03,.03) : Math.sqrt(R());
     const zm = 0.34*Math.sqrt(Math.max(0, 1-x*x)); return [x*s, y*s, rr(-zm,zm)*s]; },
-  two(){ const p = TWO.at(R()); return [p[0]+rr(-.07,.07), p[1]+rr(-.07,.07), rr(-.13,.13)]; },
-  three(){ const p = DIGIT3.at(R()); return [p[0]+rr(-.07,.07), p[1]+rr(-.07,.07), rr(-.13,.13)]; },
-  four(){ const p = DIGIT4.at(R()); return [p[0]+rr(-.07,.07), p[1]+rr(-.07,.07), rr(-.13,.13)]; },
+  two(){ const p = TWO.at(R()), w = V.th || .07; return [shX(p[0], p[1])+rr(-w,w), p[1]*V.sc+rr(-w,w), rr(-.13,.13)]; },
+  three(){ const p = DIGIT3.at(R()), w = V.th || .07; return [shX(p[0], p[1])+rr(-w,w), p[1]*V.sc+rr(-w,w), rr(-.13,.13)]; },
+  four(){ const p = DIGIT4.at(R()), w = V.th || .07; return [shX(p[0], p[1])+rr(-w,w), p[1]*V.sc+rr(-w,w), rr(-.13,.13)]; },
   star(){ if (R() < .35){ const p = STAR.at(R()); return [p[0]+rr(-.02,.02), p[1]+rr(-.02,.02), rr(-.04,.04)]; }
-    const k = Math.floor(R()*10), a = STARV[k], b = STARV[(k+1)%10], r1 = Math.sqrt(R()), r2 = R();
+    const n = STARV.length, k = Math.floor(R()*n), a = STARV[k], b = STARV[(k+1)%n], r1 = Math.sqrt(R()), r2 = R();
     const x = r1*((1-r2)*a[0]+r2*b[0]), y = r1*((1-r2)*a[1]+r2*b[1]) + (1-r1)*-0.04;
     return [x, y, (1-r1)*0.32*rr(-1,1)]; },
-  fist(i){ const r = R() < .8 ? 0.72*rr(.97,1.03) : 0.72*Math.cbrt(R()); return [dir[i*3]*r, dir[i*3+1]*r, dir[i*3+2]*r]; },
+  fist(i){ const R0 = V.r || 0.72;
+    if (V.bands && R() < .45){ const lat = ((Math.floor(R()*V.bands)+.5)/V.bands)*2-1, a = R()*TAU, w = Math.sqrt(1-lat*lat)*R0*1.04; // vành vĩ tuyến
+      return [Math.cos(a)*w, lat*R0, Math.sin(a)*w]; }
+    const r = R() < .8 ? R0*rr(.97,1.03) : R0*Math.cbrt(R()); return [dir[i*3]*r, dir[i*3+1]*r, dir[i*3+2]*r]; },
   pinch(i){ return gen.fist(i); },                 // quả cầu, cỡ do độ véo quyết định từng khung
-  ring(){ if (R() < .13){ const yy = rr(-1,1), w = (1-Math.abs(yy))*0.15; return [rr(-w,w), 0.98 + yy*0.15, rr(-w,w)]; } // hạt kim cương
-    const a = R()*TAU, b = R()*TAU, tr = 0.075*Math.sqrt(R()), r = 0.82 + Math.cos(b)*tr;
+  ring(){ const RR = V.r || 0.82, TB = V.tube || 0.075, G = V.gems ?? 1;
+    if (G && R() < .13){ const ga = Math.PI/2 + Math.floor(R()*G)*TAU/G, yy = rr(-1,1), w = (1-Math.abs(yy))*0.15, cr = RR + 0.16 + yy*0.15; // hạt kim cương
+      return [Math.cos(ga)*cr + rr(-w,w), Math.sin(ga)*cr - 0.05 + rr(-w,w)*0.3, rr(-w,w)]; }
+    const a = R()*TAU, b = R()*TAU, tr = TB*Math.sqrt(R()), r = RR + Math.cos(b)*tr;
     return [Math.cos(a)*r, Math.sin(a)*r - 0.05, Math.sin(b)*tr]; },
-  bolt(){ if (R() < .3){ const p = BOLT.at(R()); return [p[0]+rr(-.015,.015), p[1]+rr(-.015,.015), rr(-.05,.05)]; }
-    for (let k = 0; k < 40; k++){ const x = rr(-0.44, 0.44), y = rr(-0.95, 0.95); if (inPoly(x, y, BOLTV)) return [x, y, rr(-.1,.1)]; }
+  bolt(){ if (R() < .3){ const p = BOLT.at(R()); return [shX(p[0], p[1])+rr(-.015,.015), p[1]*V.sc+rr(-.015,.015), rr(-.05,.05)]; }
+    for (let k = 0; k < 40; k++){ const x = rr(-0.44, 0.44), y = rr(-0.95, 0.95); if (inPoly(x, y, BOLTV)) return [shX(x, y), y*V.sc, rr(-.1,.1)]; }
     const p = BOLT.at(R()); return [p[0], p[1], 0]; },
-  water(){ const lane = Math.floor(R()*5); return [rr(-1.4,1.4), -0.5 + lane*0.25 + rr(-.02,.02), rr(-.22,.22)]; },
+  water(){ const L = V.lanes || 5, lane = Math.floor(R()*L); return [rr(-1.4,1.4), -0.5 + lane/(L-1) + rr(-.02,.02), rr(-.22,.22)]; },
   miku(){ const P = mikuPts(); if (P.length < 4) return gen.heart();
-    const k = Math.floor(R()*P.length/2)*2; return [P[k]+rr(-.006,.006), P[k+1]+rr(-.006,.006), rr(-.07,.07)]; },
+    const k = Math.floor(R()*P.length/2)*2; return [shX(P[k], P[k+1])+rr(-.006,.006), P[k+1]*V.sc+rr(-.006,.006), rr(-.07,.07)]; },
+  flower(i){ return [GB[i*3]*0.95, GB[i*3+1]*0.95, GB[i*3+2]]; },
+  attractor(i){ return [GB[i*3], GB[i*3+1], GB[i*3+2]]; },
+  shell(i){ return [GB[i*3], GB[i*3+1], GB[i*3+2]]; },
+  drawn(){ const p = DRAWN.at(R()); return [p[0]+rr(-.03,.03), p[1]+rr(-.03,.03), rr(-.12,.12)]; },
+  skeleton(i){ return gen.fist(i); },              // vị trí thật tính mỗi khung theo 21 khớp tay
   rain(i){ if (rnd[i] < .2){ const x = rr(-1,1), w = Math.sqrt(1-x*x); // đám mây trên đầu
       return [x*0.95, 0.95 + rr(-0.06,0.16)*w + 0.04*Math.sin(x*9), rr(-.18,.18)*w]; }
     return [rr(-1.35,1.35), rr(-1.2,0.85), rr(-.35,.35)]; },
   tornado(){ return [R()*TAU, -1 + 2.05*Math.pow(R(), 0.85), rr(0.7,1.15)]; }, // (góc, độ cao, hệ số bán kính) — vị trí thật tính mỗi khung
   gallery(){ if (R() < .72){ const a = R()*TAU; return [Math.sin(a)*1.32 + rr(-.02,.02), -0.66 + rr(-.025,.025), Math.cos(a)*0.92 - 0.2 + rr(-.02,.02)]; }
     return [rr(-1.5,1.5), rr(-0.55,0.95), rr(-1.0,0.2)]; },
-  idle(i){ const r = rr(0.25, 1.7), t = Math.atan2(dir[i*3+2], dir[i*3]) + r*1.6; // thiên hà xoắn
+  idle(i){ const r = rr(0.25, 1.7), A = V.arms || 0, t = (A ? Math.floor(R()*A)*TAU/A + rr(-.5,.5)*(1.9-r)/1.6 : Math.atan2(dir[i*3+2], dir[i*3])) + r*(V.tw || 1.6); // thiên hà xoắn
     return [Math.cos(t)*r, dir[i*3+1]*0.16*(1.8-r) + rr(-.04,.04), Math.sin(t)*r]; },
 };
 
@@ -393,26 +617,100 @@ const MODES = {
   rain:   {label:'👎 Mưa rơi',      tint:'#8fb4ff', mix:.5,  spin:false, photos:8,  size:.2},
   tornado:{label:'👋 Lốc xoáy',     tint:'#9ff5ee', mix:.3,  spin:false, photos:8,  size:.2},
   gallery:{label:'👉 Xoay vòng ảnh', tint:'#39C5BB', mix:.2,  spin:false, photos:10, size:.3},
+  // chế độ mới thêm ở CUỐI để số thứ tự (MID) của chế độ cũ không đổi
+  flower: {label:'🌻 Hoa toán học',  tint:'#ffc46b', mix:.45, spin:true,  photos:10, size:.24},
+  attractor:{label:'🌀 Dải lụa hỗn loạn', tint:'#b59bff', mix:.4, spin:true, photos:8, size:.22},
+  shell:  {label:'🐚 Vỏ ốc, sao biển', tint:'#ff9e7a', mix:.45, spin:true, photos:10, size:.24},
+  drawn:  {label:'✍️ Hình bạn vẽ',   tint:'#9ff5ee', mix:.4,  spin:false, photos:8,  size:.22},
+  skeleton:{label:'🖐️ Bàn tay ánh sáng', tint:'#b8fff9', mix:.3, spin:false, photos:5, size:.2},
 };
+// kiểu hạt hợp với từng hình (chế độ "Tự chọn theo hình" bốc ngẫu nhiên 1 kiểu mỗi lần)
+const ST = {idle:['dot','constellation','spark'], heart:['heart','spark','petal'], two:['dot','spark','diamond'], explode:['confetti','spark','star'],
+  fist:['diamond','constellation','dot'], star:['star','spark'], point:['spark','dot'], three:['dot','spark','diamond'], four:['dot','spark','diamond'],
+  ring:['diamond','spark','ring'], bolt:['spark','diamond'], water:['drop','ring'], miku:['atlas'], pinch:['heart','dot'], rain:['streak'],
+  tornado:['petal','confetti'], gallery:['dot','spark'], flower:['petal','heart','dot'], attractor:['dot','spark','constellation'],
+  shell:['ring','diamond','petal'], drawn:['spark','star','heart','constellation'], skeleton:['spark','dot','ring']};
 const MID = {}; Object.keys(MODES).forEach((k, i) => { MID[k] = i; }); // số hoá để vòng hạt không so chuỗi
+const MSK = MID.skeleton;
+const REROLL = new Set(['heart','two','three','four','star','ring','bolt','fist','idle','miku','water','flower','attractor','shell','drawn','tornado']);
+const LINE_OK = new Set(['heart','two','three','four','star','ring','bolt','miku','fist','idle','flower','attractor','shell','drawn','pinch']);
 let mode = '', modeT0 = 0, toastTimer = 0;
 const tintTarget = new THREE.Color('#39C5BB');
 function showToast(txt){ const t = $('toast'); t.textContent = txt; t.classList.add('show');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 1300); }
-function setMode(m){
-  if (m === mode) return;
-  const prev = mode; mode = m; modeT0 = performance.now()/1000;
+
+/* ---------- Kiểu hạt ---------- */
+const STYLES = [['auto','Tự chọn theo hình'],['dot','Chấm tròn'],['heart','Trái tim nhỏ'],['star','Sao 5 cánh'],['petal','Cánh hoa'],['drop','Giọt nước'],
+  ['spark','Sao lấp lánh'],['diamond','Kim cương'],['ring','Vòng nhỏ'],['atlas','Nốt nhạc và chữ'],['confetti','Giấy màu'],['constellation','Chòm sao nối dây']];
+const SID = {dot:0, heart:1, star:2, petal:3, drop:4, spark:5, diamond:6, ring:7, atlas:8, streak:9, confetti:10, constellation:0};
+const SSPIN = {petal:1, confetti:1, diamond:.6, star:.5, spark:.25};
+const GLY = {miku:[0,1,2,3,4,14,15], heart:[8,9,5,10], star:[11,12,6], rain:[13,14], water:[13,14,0], flower:[10,9,12]};
+const SKEY = 'hand-gesture-shapes.kieu-hat.v1';
+let styleUser = 'auto', styleCur = 'dot';
+try { const s = localStorage.getItem(SKEY); if (s && STYLES.some(x => x[0] === s)) styleUser = s; } catch (e){}
+const LINE_M = small ? 500 : 900, lineIdx = new THREE.BufferAttribute(new Uint16Array(LINE_M*4), 1);
+lineGeo.setIndex(lineIdx); lineGeo.setDrawRange(0, 0);
+function buildLines(){                             // nối mỗi hạt với ≤ 2 hạt gần nhất (lưới băm 3D, chỉ chạy khi đổi hình)
+  const M = LINE_M, CELL = 0.16, grid = new Map(), idx = lineIdx.array; let n = 0;
+  const key = (x, y, z) => ((x+64)*128 + (y+64))*128 + (z+64);
+  for (let i = 0; i < M; i++){ const k = key(Math.floor(home[i*3]/CELL), Math.floor(home[i*3+1]/CELL), Math.floor(home[i*3+2]/CELL));
+    let a = grid.get(k); if (!a) grid.set(k, a = []); a.push(i); }
+  for (let i = 0; i < M; i++){
+    const x = home[i*3], y = home[i*3+1], z = home[i*3+2], cx = Math.floor(x/CELL), cy = Math.floor(y/CELL), cz = Math.floor(z/CELL);
+    let b1 = -1, d1 = CELL*CELL, b2 = -1, d2 = CELL*CELL;
+    for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) for (let oz = -1; oz <= 1; oz++){
+      const a = grid.get(key(cx+ox, cy+oy, cz+oz)); if (!a) continue;
+      for (const j of a){ if (j <= i) continue; const dx = home[j*3]-x, dy = home[j*3+1]-y, dz = home[j*3+2]-z, d = dx*dx+dy*dy+dz*dz;
+        if (d < d1){ b2 = b1; d2 = d1; b1 = j; d1 = d; } else if (d < d2){ b2 = j; d2 = d; } } }
+    if (b1 >= 0){ idx[n++] = i; idx[n++] = b1; } if (b2 >= 0){ idx[n++] = i; idx[n++] = b2; }
+  }
+  lineIdx.needsUpdate = true; lineGeo.setDrawRange(0, n);   // dùng lại 1 mảng chỉ số, không cấp bộ nhớ mới
+}
+function applyStyle(s){
+  styleCur = s; uni.uStyle.value = SID[s]; uni.uSpin.value = SSPIN[s] || 0;
+  uni.uShapeScale.value = (s === 'dot' || s === 'constellation') ? 1 : s === 'atlas' ? (small ? 1.8 : 2.1) : s === 'streak' ? 2.2 : (small ? 1.5 : 1.7);
+  mat.blending = s === 'atlas' ? THREE.NormalBlending : THREE.AdditiveBlending; // emoji màu: cộng sáng sẽ cháy trắng
+  const G = GLY[mode] || GLYPHS.map((_, k) => k);
+  for (let i = 0; i < N; i++)
+    cell[i] = s === 'atlas' ? (small && rnd[i] > .6 ? -1 : G[i % G.length]) : (mode === 'rain' && rnd[i] < .2) ? -1 : 0; // mây trên đầu mưa vẫn là chấm
+  geo.attributes.aCell.needsUpdate = true;
+  if (s === 'constellation' && LINE_OK.has(mode)) buildLines();
+}
+const styleLabel = () => '✨ Kiểu hạt: ' + STYLES.find(x => x[0] === styleUser)[1];
+function cycleStyle(){
+  const k = STYLES.findIndex(x => x[0] === styleUser); styleUser = STYLES[(k+1) % STYLES.length][0];
+  try { localStorage.setItem(SKEY, styleUser); } catch (e){}
+  $('styleBtn').textContent = styleLabel(); if (mode) applyStyle(styleUser === 'auto' ? pick(ST[mode]) : styleUser);
+  showToast(styleLabel());
+}
+$('styleBtn').textContent = styleLabel();
+$('styleBtn').addEventListener('click', cycleStyle);
+
+// dựng lại "chỗ đứng" của mọi hạt theo một biến thể mới (vào chế độ, giữ lâu, hoặc bấm phím cách)
+function regen(m, first){
+  V = variant(m, first); rebuildShapes(m);
   for (let i = 0; i < N; i++){
     let p;
     if (m === 'explode' || m === 'point') p = [pos[i*3], pos[i*3+1], pos[i*3+2]];
     else p = gen[m](i);
     home[i*3] = p[0]; home[i*3+1] = p[1]; home[i*3+2] = p[2];
   }
+  tintTarget.set(MODES[m].tint).offsetHSL(V.hue, 0, 0);
+  applyStyle(styleUser === 'auto' ? pick(ST[m]) : styleUser);
+}
+function setMode(m){
+  // ☝️ đang vẽ rồi nắm tay ✊ → chốt nét vẽ thành hình (bỏ 0,35 giây cuối lúc tay đang khép lại)
+  if (mode === 'point' && m === 'fist' && drewOnPurpose() && finalizeDrawing(350)){ m = 'drawn'; if (manual === 'fist') manual = 'drawn'; if (handMode === 'fist') handMode = 'drawn'; }
+  if (m === mode) return;
+  const prev = mode; mode = m; modeT0 = performance.now()/1000;
+  if (m === 'point'){ STROKES = []; curStroke = null; strokeN = 0; }
+  regen(m, true);
   if (prev === 'gallery') applyPhotos();         // trả lại ảnh về chỗ cũ sau khi xoay vòng
-  tintTarget.set(MODES[m].tint);
   document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.m === m));
   showToast(MODES[m].label);
 }
+function reroll(toast){ if (!mode) return; modeT0 = performance.now()/1000; regen(mode, false); if (toast) showToast('🎲 ' + MODES[mode].label + ' · biến thể mới'); }
+$('varBtn').addEventListener('click', () => reroll(true));
 
 /* ---------- Vệt sáng theo đầu ngón ---------- */
 const TL = 40, trail = Array.from({length:TL}, () => new Float32Array(2));
@@ -424,15 +722,19 @@ let zoomTarget = 1, zoomCur = 1, zoomOn = false, zoomD0 = 1, zoomZ0 = 1;
 let pinchTarget = 0.8, pinchCur = 0.8, galPos = 0, galTarget = 0;
 
 /* ---------- Chuột / phím / nút ---------- */
-stage.addEventListener('pointerdown', e => { drag = {x:e.clientX, y:e.clientY}; stage.classList.add('drag'); stage.setPointerCapture(e.pointerId); });
+const mouseDraws = () => mode === 'point' && !(camOn && handSeen);
+stage.addEventListener('pointerdown', e => { drag = {x:e.clientX, y:e.clientY}; stage.classList.add('drag'); stage.setPointerCapture(e.pointerId);
+  if (mouseDraws()){ tipNdc.x = e.clientX/innerWidth*2-1; tipNdc.y = 1-e.clientY/innerHeight*2; penDown = true; curStroke = null; clearTimeout(drawTimer); } });
 stage.addEventListener('pointermove', e => {
   if (!camOn || !handSeen){ tipNdc.x = e.clientX/innerWidth*2-1; tipNdc.y = 1-e.clientY/innerHeight*2; }
   if (drag && mode !== 'point'){ dragY += (e.clientX-drag.x)*0.008; dragX = Math.max(-.9, Math.min(.9, dragX + (e.clientY-drag.y)*0.006)); drag = {x:e.clientX, y:e.clientY}; }
 });
-const endDrag = () => { drag = null; stage.classList.remove('drag'); };
+const endDrag = () => { drag = null; stage.classList.remove('drag');
+  if (penDown){ penDown = false; curStroke = null; clearTimeout(drawTimer);  // thả chuột 1,1 giây không vẽ tiếp → chốt hình
+    drawTimer = setTimeout(() => { if (mode === 'point' && !penDown && finalizeDrawing(0)) manual = 'drawn'; }, 1100); } };
 stage.addEventListener('pointerup', endDrag); stage.addEventListener('pointercancel', endDrag);
 const KEYS = {'0':'idle','1':'heart','2':'two','3':'explode','4':'fist','5':'star','6':'point','7':'three','8':'four','9':'ring',
-  q:'bolt', w:'water', e:'miku', r:'pinch', t:'rain', y:'tornado', u:'gallery'};
+  q:'bolt', w:'water', e:'miku', r:'pinch', t:'rain', y:'tornado', u:'gallery', i:'flower', o:'attractor', p:'shell', d:'drawn', h:'skeleton'};
 const zoomBy = k => { zoomTarget = clamp(zoomTarget*k, 0.45, 2.4); showToast(`🔍 ${Math.round(zoomTarget*100)}%`); };
 addEventListener('keydown', e => {
   const tg = e.target.tagName;
@@ -441,7 +743,11 @@ addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft' || e.key === 'ArrowRight'){ galTarget += e.key === 'ArrowRight' ? 1 : -1; manual = 'gallery'; return; }
   if (e.key === '-' || e.key === '_'){ zoomBy(1/1.15); return; }
   if (e.key === '=' || e.key === '+'){ zoomBy(1.15); return; }
-  const m = KEYS[e.key.toLowerCase()]; if (m) manual = m;
+  if (e.key === ' ' && tg !== 'BUTTON' && tg !== 'SUMMARY' && tg !== 'A'){ e.preventDefault(); reroll(true); return; }
+  const lk = e.key.toLowerCase();
+  if (lk === 'k'){ cycleStyle(); return; }
+  if (lk === 'z'){ toggleRoi(); return; }
+  const m = KEYS[lk]; if (m) manual = m;
 });
 document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => { manual = c.dataset.m; }));
 
@@ -568,8 +874,10 @@ function knn(f){
 /* ---------- Chuyển động: bộ đệm ~1 giây vị trí lòng bàn tay ---------- */
 const MB = 48, mbX = new Float32Array(MB), mbY = new Float32Array(MB), mbT = new Float64Array(MB);
 let mbI = 0, mbN = 0, moving = false, waveUntil = 0, waveS = 0, swipeCool = 0, pend = 0, pendT = 0, pendRev = 0;
-const AMP = 0.05;
+let Ps = 0.18;                                     // cỡ lòng bàn tay (làm mượt): tay xa camera nhỏ → ngưỡng vẫy/quẹt nhỏ theo
 function motion(lm, now){
+  Ps = Ps*0.9 + D(lm[0], lm[9])*0.1;
+  const AMP = clamp(0.28*Ps, 0.012, 0.05), SWE = clamp(1.45*Ps, 0.07, 0.26), MOVE = clamp(5*Ps, 0.25, 0.9);
   const x = (1 - lm[9].x)*ASP, y = lm[9].y;        // x lật gương cho khớp hướng bạn nhìn thấy
   mbX[mbI] = x; mbY[mbI] = y; mbT[mbI] = now; mbI = (mbI + 1) % MB; if (mbN < MB) mbN++;
   let ext = 0, dirS = 0, rev = 0, started = false, x35 = x, y35 = y, g35 = false, x15 = x, y15 = y, t15 = now, g15 = false;
@@ -584,10 +892,10 @@ function motion(lm, now){
     if (age <= 160 && !g15){ x15 = xx; y15 = mbY[k]; t15 = mbT[k]; g15 = true; }
   }
   const openish = (FP[1]+FP[2]+FP[3]+FP[4])/4 > 0.55;
-  moving = Math.hypot(x - x15, y - y15)/Math.max(16, now - t15)*1000 > 0.9;
+  moving = Math.hypot(x - x15, y - y15)/Math.max(16, now - t15)*1000 > MOVE;
   if (openish && rev >= 3){ waveUntil = now + 1800; waveS = Math.min(1, 0.6 + rev*0.1); pend = 0; }
   const dx = x - x35, dy = y - y35;
-  if (!pend && now > swipeCool && now >= waveUntil && openish && rev < 3 && Math.abs(dx) > 0.26 && Math.abs(dy) < Math.abs(dx)*0.6){
+  if (!pend && now > swipeCool && now >= waveUntil && openish && rev < 3 && Math.abs(dx) > SWE && Math.abs(dy) < Math.abs(dx)*0.6){
     pend = dx > 0 ? 1 : -1; pendT = now; pendRev = rev; }
   if (pend && rev > pendRev) pend = 0;             // vừa lướt đã quay đầu → đang vẫy, không phải quẹt
   if (pend && now - pendT > 260){ swipe(pend); pend = 0; swipeCool = now + 700; }
@@ -600,10 +908,11 @@ function swipe(d){
 
 /* ---------- Gom lại: chấm điểm, bỏ phiếu, chốt ---------- */
 const G2M = {heart:'heart', victory:'two', open:'explode', fist:'fist', thumb:'star', point:'point', three:'three', four:'four',
-  ok:'ring', rock:'bolt', call:'water', ily:'miku', pinch:'pinch', thumbDown:'rain', wave:'tornado'};
+  ok:'ring', rock:'bolt', call:'water', ily:'miku', pinch:'pinch', thumbDown:'rain', wave:'tornado', fists:'flower'};
+const GEN3 = ['flower','attractor','shell']; let genI = 0;   // 👊👊 mỗi lần ra 1 họ hình toán, lần lượt
 const GVI = {none:'Chưa thấy tay', unknown:'Đang đoán…', heart:'🫶 Trái tim', victory:'✌️ Chữ V', open:'✋ Xoè tay', fist:'✊ Nắm tay',
   thumb:'👍 Like', thumbDown:'👎 Chê', point:'☝️ 1 ngón', three:'3️⃣ 3 ngón', four:'🖐️ 4 ngón', ok:'👌 OK', rock:'🤘 Rock',
-  call:'🤙 Gọi điện', ily:'🤟 I love you', pinch:'🤏 Véo', wave:'👋 Vẫy tay', zoom:'🙌 Phóng/thu'};
+  call:'🤙 Gọi điện', ily:'🤟 I love you', pinch:'🤏 Véo', wave:'👋 Vẫy tay', zoom:'🙌 Phóng/thu', fists:'👊👊 Hai nắm tay'};
 const gName = g => GVI[g] || (taughtBy[g] ? '🎓 ' + taughtBy[g].name : g);
 const gShort = g => GVI[g] ? GVI[g].split(' ')[0] : gName(g);
 const modeOf = g => G2M[g] || (taughtBy[g] ? taughtBy[g].target : null);
@@ -642,6 +951,8 @@ function classify(hs, now, extra){
   if (nh === 2){
     const hsc = heartScore(hs[0], hs[1], stable === 'heart');
     if (hsc > 0){ addCand('heart', hsc); top = 'heart'; zoomOn = false; }
+    else if (OPN[0] < 0.25 && OPN[1] < 0.25 && (top === 'fist' || top === 'unknown' || top === 'fists')){ // 👊👊 hai tay cùng nắm
+      addCand('fists', 1 - Math.max(OPN[0], OPN[1])); top = 'fists'; zoomOn = false; }
     else if (OPN[0] > 0.6 && OPN[1] > 0.6){
       const d = D(hs[0][9], hs[1][9]);
       if (!zoomOn){ zoomOn = true; zoomD0 = Math.max(0.05, d); zoomZ0 = zoomTarget; }
@@ -664,12 +975,12 @@ function feed(g, now){
   const hold = cand === 'none' ? 900 : handSize < 0.09 ? 450 : 300; // tay xa camera → giữ lâu hơn mới chốt
   if (cand !== stable && now - candT >= hold){
     stable = cand; $('gLabel').textContent = gName(stable);
-    const m = modeOf(stable);
+    const m = stable === 'fists' ? GEN3[genI++ % 3] : modeOf(stable);
     if (m){ handMode = m; manual = null; }
     else if (stable === 'none') handMode = null;
   }
 }
-let uiT = 0, lastTxt = '', lastW = -1;
+let uiT = 0, lastTxt = '', lastW = -1, lastZs = '';
 function updateConf(now){
   if (now - uiT < 110) return; uiT = now;
   let txt, w = 0;
@@ -687,6 +998,8 @@ function updateConf(now){
     w = a >= 0 ? Math.round(CS[a]*100) : 0;
   }
   if (txt !== lastTxt){ $('cands').textContent = txt; lastTxt = txt; }
+  const zs = camOn ? 'camera đang chạy' + (roi.s < 0.999 && zMode === 'lock' ? ` · 🔭 x${(1/roi.s).toFixed(1).replace('.', ',')}` : '') : '';
+  if (camOn && zs !== lastZs){ $('camState').textContent = zs; lastZs = zs; }
   if (w !== lastW){ $('confBar').style.width = w + '%'; lastW = w; }
   // dòng 2: mô hình MediaPipe đang thấy gì (tên gốc + %) + tay trái/phải
   if (engine || grTopName){
@@ -707,6 +1020,44 @@ const GR_MODEL = 'https://storage.googleapis.com/mediapipe-models/gesture_recogn
 const MODEL = 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
 const video = $('video'), bones = $('bones'), bctx = bones.getContext('2d');
 let camOn = false, landmarker = null, engine = null, lastVT = -1, hands = [], nextDet = 0, detCost = 10, mpExtra = null, demoUntil = 0;
+
+/* ---------- Tự phóng xa: cắt vùng quanh tay, phóng to rồi mới đưa cho mô hình ---------- */
+// mô hình thu cả khung về 192 điểm ảnh → tay ở xa chỉ còn vài điểm ảnh. Bản 0.10.14 không nhận regionOfInterest cho tay,
+// nên tự cắt vào canvas (giữ đúng tỉ lệ khung) rồi đổi điểm khớp về toạ độ khung gốc.
+const zc = document.createElement('canvas'), zx = zc.getContext('2d', {alpha:false});
+const ZFLOOR = small ? 0.4 : 0.3;                  // phóng tối đa ~x3,3 (điện thoại ~x2,5)
+const LADDER = [{x:0, y:0, s:1}, {x:.25, y:.22, s:.5}, {x:.04, y:.18, s:.5}, {x:.46, y:.18, s:.5}]; // cả khung · giữa · trái · phải
+let roi = {x:0, y:0, s:1}, zMode = 'search', zStep = 0, zMiss = 0, zOn = true;
+try { zOn = localStorage.getItem('hand-gesture-shapes.tu-phong.v1') !== '0'; } catch (e){}
+function feedFrame(r){
+  const VW = video.videoWidth || 640, VH = video.videoHeight || 480, cw = Math.min(VW, 640), ch = Math.round(cw*VH/VW);
+  if (zc.width !== cw || zc.height !== ch){ zc.width = cw; zc.height = ch; }
+  zx.drawImage(video, r.x*VW, r.y*VH, r.s*VW, r.s*VH, 0, 0, cw, ch); return zc;
+}
+function updateRoi(raw){
+  if (!zOn){ roi = {x:0, y:0, s:1}; return; }
+  if (raw.length){ zMiss = 0; zMode = 'lock';
+    let x0 = 1, y0 = 1, x1 = 0, y1 = 0;
+    for (const L of raw) for (const p of L){ if (p.x < x0) x0 = p.x; if (p.x > x1) x1 = p.x; if (p.y < y0) y0 = p.y; if (p.y > y1) y1 = p.y; }
+    let s = clamp(Math.max(x1-x0, y1-y0)*3.2, ZFLOOR, 1); if (s > 0.85) s = 1;   // tay to (đứng gần) → không phóng
+    const tx = clamp((x0+x1)/2 - s/2, 0, 1-s), ty = clamp((y0+y1)/2 - s/2, 0, 1-s);
+    // giữ YÊN ô cắt (mô hình bám tay theo khung trước) — chỉ nhảy khi tay sát mép ô hoặc cỡ lệch hơn 25%
+    const m = 0.15*roi.s, nearEdge = x0 < roi.x + m || x1 > roi.x + roi.s - m || y0 < roi.y + m || y1 > roi.y + roi.s - m;
+    if (nearEdge || Math.abs(s - roi.s) > 0.25*roi.s) roi = {x:tx, y:ty, s};
+    roi.x = clamp(roi.x, 0, 1-roi.s); roi.y = clamp(roi.y, 0, 1-roi.s);
+  } else if (zMode === 'lock' && ++zMiss <= 6){       // mất tay: nới vùng 1,4 lần mỗi lượt trước khi đi tìm lại
+    const s = Math.min(1, roi.s*1.4);
+    roi = {x: clamp(roi.x - (s-roi.s)/2, 0, 1-s), y: clamp(roi.y - (s-roi.s)/2, 0, 1-s), s};
+  } else { zMode = 'search'; roi = {...LADDER[zStep++ % LADDER.length]}; }
+}
+function toggleRoi(){
+  zOn = !zOn; roi = {x:0, y:0, s:1}; zMode = 'search';
+  try { localStorage.setItem('hand-gesture-shapes.tu-phong.v1', zOn ? '1' : '0'); } catch (e){}
+  $('zoomBtn').textContent = '🔭 Tự phóng xa: ' + (zOn ? 'Bật' : 'Tắt'); $('zoomBtn').setAttribute('aria-pressed', String(zOn));
+  showToast('🔭 Tự phóng xa: ' + (zOn ? 'bật' : 'tắt'));
+}
+$('zoomBtn').textContent = '🔭 Tự phóng xa: ' + (zOn ? 'Bật' : 'Tắt'); $('zoomBtn').setAttribute('aria-pressed', String(zOn));
+$('zoomBtn').addEventListener('click', toggleRoi);
 
 /* ---------- One Euro filter: làm mượt điểm khớp — tay đứng yên thì lọc mạnh (hết rung), tay lướt nhanh thì lọc nhẹ (không trễ) ---------- */
 // Casiez, Roussel, Vogel (CHI 2012). minCutoff: rung khi chậm · beta: trễ khi nhanh · đơn vị toạ độ = khung hình (0–1)
@@ -738,19 +1089,23 @@ function smoothHands(raw, hd, now){
   return out;
 }
 const BONES = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+BONES.forEach(([a, b], k) => { BA[k] = a; BB2[k] = b; });
 async function startCam(){
   const btn = $('camBtn'), msg = $('camMsg'), st = $('camState');
   if (camOn) return;
   if (!navigator.mediaDevices?.getUserMedia){ msg.textContent = 'Trình duyệt không cho dùng camera — dùng phím 1–9, Q–U'; teachMsg('Trình duyệt này không cho dùng camera nên chưa dạy được.'); return; }
   btn.disabled = true; $('teachCam').disabled = true; msg.textContent = 'Đang xin quyền camera…';
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({video:{width:{ideal:640}, height:{ideal:480}, facingMode:'user'}, audio:false});
+    // khung rộng 1280×720 (16:9): thấy cả phòng + đủ điểm ảnh để phóng vào tay ở xa; máy không chịu thì xin kiểu thường
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({video:{width:{ideal: small ? 960 : 1280}, height:{ideal: small ? 540 : 720}, aspectRatio:{ideal:16/9}, facingMode:'user'}, audio:false}); }
+    catch (e){ if (e && e.name === 'NotAllowedError') throw e; stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}, audio:false}); }
     video.srcObject = stream; await video.play();
     msg.textContent = 'Đang tải bộ nhận dạng tay…'; st.textContent = 'đang tải…';
     const vision = await import(TV + '/vision_bundle.mjs');
     const fs = await vision.FilesetResolver.forVisionTasks(TV + '/wasm');
     const opts = (m, d) => ({baseOptions:{modelAssetPath:m, delegate:d}, runningMode:'VIDEO', numHands:2,
-      minHandDetectionConfidence:0.6, minHandPresenceConfidence:0.5, minTrackingConfidence:0.5,
+      minHandDetectionConfidence:0.45, minHandPresenceConfidence:0.5, minTrackingConfidence:0.5,
       cannedGesturesClassifierOptions:{maxResults:-1, scoreThreshold:0}});
     // thử lần lượt: GestureRecognizer GPU → CPU → HandLandmarker GPU → CPU
     const tries = [['GestureRecognizer', GR_MODEL, 'GPU'], ['GestureRecognizer', GR_MODEL, 'CPU'], ['HandLandmarker', MODEL, 'GPU'], ['HandLandmarker', MODEL, 'CPU']];
@@ -767,6 +1122,7 @@ async function startCam(){
     $('mpLine').textContent = engine.kind === 'GestureRecognizer' ? `🤖 MediaPipe cử chỉ (${engine.delegate}) đã sẵn sàng` : `🤖 Chỉ có điểm khớp (${engine.delegate}) — luật ngón lo hết`;
     bones.width = video.videoWidth || 640; bones.height = video.videoHeight || 480;
     ASP = (video.videoWidth || 640)/(video.videoHeight || 480);
+    $('camBox').querySelector('.view').style.aspectRatio = `${video.videoWidth || 640} / ${video.videoHeight || 480}`; // ô xem đúng tỉ lệ thật, không cắt
     camOn = true; $('camBox').classList.add('on'); st.textContent = 'camera đang chạy';
   } catch (err){
     console.warn('camera/model:', err);
@@ -787,14 +1143,19 @@ function drawBones(){
     bctx.beginPath(); for (const [a,b] of BONES){ bctx.moveTo(lm[a].x*W, lm[a].y*H); bctx.lineTo(lm[b].x*W, lm[b].y*H); } bctx.stroke();
     for (const p of lm){ bctx.beginPath(); bctx.arc(p.x*W, p.y*H, 3.5, 0, TAU); bctx.fill(); }
   }
+  if (roi.s < 0.999 && zMode === 'lock'){ bctx.setLineDash([10, 7]); bctx.lineWidth = 3; bctx.strokeStyle = 'rgba(255,214,107,.9)'; // vùng máy đang soi
+    bctx.strokeRect(roi.x*W, roi.y*H, roi.s*W, roi.s*H); bctx.setLineDash([]); }
 }
 function detect(now){
   if (!camOn || !landmarker || video.readyState < 2 || video.currentTime === lastVT || now < nextDet || now < demoUntil) return;
   lastVT = video.currentTime;
   const t0 = performance.now();
   let res = null;
-  try { res = engine.kind === 'GestureRecognizer' ? landmarker.recognizeForVideo(video, now) : landmarker.detectForVideo(video, now); } catch (e){ res = null; }
-  const raw = (res && res.landmarks) || [], hd = res && (res.handedness || res.handednesses);
+  const used = {x:roi.x, y:roi.y, s:roi.s}, src = used.s >= 0.999 ? video : feedFrame(used);
+  try { res = engine.kind === 'GestureRecognizer' ? landmarker.recognizeForVideo(src, now) : landmarker.detectForVideo(src, now); } catch (e){ res = null; }
+  const raw0 = (res && res.landmarks) || [], hd = res && (res.handedness || res.handednesses);
+  const raw = used.s < 0.999 ? raw0.map(L => L.map(p => ({x: used.x + p.x*used.s, y: used.y + p.y*used.s, z: (p.z || 0)*used.s}))) : raw0; // về toạ độ khung gốc
+  updateRoi(raw);
   hands = smoothHands(raw, hd, now);
   mpExtra = raw.length ? {gestures: res.gestures, handedness: hd, world: res.worldLandmarks} : null;
   const cost = performance.now() - t0;            // máy yếu: giãn nhịp dò tay để hạt vẫn mượt
@@ -909,6 +1270,9 @@ window.__gestureTest = {
   untrain: () => { taught = []; rebuildTaught(); renderTaught(); return saveTaught(); },
   load: () => { loadTaught(); renderTaught(); return taught.length; },
   modeOf: g => modeOf(g),
+  // bản 2: xem vùng tự phóng, kiểu hạt, biến thể đang dùng
+  roi: () => ({...roi, on: zOn}), style: () => ({user: styleUser, cur: styleCur}), variant: () => ({...V}),
+  drawPoints: () => strokeN,
 };
 const SL = new Float32Array(4);                    // chỗ đứng 1 tấm ảnh: x, y, z, hệ số cỡ (dùng lại, không tạo mới)
 const SLOT3 = [[-0.374,0.60],[0.066,0.815],[0.407,0.52],[0.247,0.096],[-0.14,0.02],[0.41,-0.22],[0.372,-0.68],[0,-0.86],[-0.41,-0.62]];
@@ -921,16 +1285,19 @@ function photoSlot(m, j, C, t, ta, beat, E, p){
     // đứng yên trên viền (đã đo: khoảng cách gần nhất giữa 2 ảnh > bề ngang 1 ảnh), chỉ nhấp nhô nhẹ
     case 'heart': q = HEART.at(u); x = q[0]*1.13*beat; y = q[1]*1.13*beat; break;
     case 'two': // nét mở: không cho ảnh chạy vòng từ đáy về đầu
-      q = TWO.at(j/Math.max(1, C-1)*0.999); x = q[0]; y = q[1]; z = 0.24 + bob; break;
+      q = TWO.at(j/Math.max(1, C-1)*0.999); x = shX(q[0], q[1]); y = q[1]*V.sc; z = 0.24 + bob; break;
     case 'three': case 'four': // số 3/4 có chỗ giao nét → đặt sẵn 9 chỗ cách nhau ≥ 0,34 (ảnh rộng ~0,24) cho khỏi chồng
-      q = (m === 'three' ? SLOT3 : SLOT4)[j % 9]; x = q[0]; y = q[1]; z = 0.24 + bob; break;
-    case 'star': { const v = STARV[j % 10]; x = v[0]*1.08; y = v[1]*1.08; break; }
+      q = (m === 'three' ? SLOT3 : SLOT4)[j % 9]; x = shX(q[0], q[1]); y = q[1]*V.sc; z = 0.24 + bob; break;
+    case 'star': { const n = STARV.length, kk = n/2, v = STARV[j < kk ? j*2 : ((j-kk)*2+1) % n]; x = v[0]*1.08; y = v[1]*1.08; break; } // đỉnh ngoài trước, rồi chỗ lõm
     case 'fist': case 'pinch': { const yy = 1-2*(j+.5)/C, r = Math.sqrt(1-yy*yy), a = j*2.39996, s = m === 'pinch' ? 1.05*pinchCur : 1.05;
       x = Math.cos(a)*r*s; y = yy*s; z = Math.sin(a)*r*s; if (m === 'pinch') k = pinchCur; break; }
     case 'explode': { const d = photos[j].d, s = 0.6 + E*1.6; x = d.x*s*1.3; y = d.y*s; z = d.z*s; break; }
     case 'point': { const pt = trail[Math.min(TL-1, Math.floor(u*TL*0.9)+3)]; x = pt[0]; y = pt[1]; z = 0.2; break; }
-    case 'ring': { const a = u*TAU + ta*0.5; x = Math.cos(a)*1.04; y = Math.sin(a)*1.04 - 0.05; z = 0.2; break; }
-    case 'bolt': q = BOLT.at(u); x = q[0]*1.06; y = q[1]*1.06; break;
+    case 'ring': { const a = u*TAU + ta*0.5, rr2 = (V.r || 0.82)*1.27; x = Math.cos(a)*rr2; y = Math.sin(a)*rr2 - 0.05; z = 0.2; break; }
+    case 'bolt': q = BOLT.at(u); x = shX(q[0], q[1])*1.06; y = q[1]*V.sc*1.06; break;
+    case 'flower': case 'attractor': case 'shell': { const a = u*TAU + ta*0.15; x = Math.cos(a)*1.12; y = Math.sin(a)*1.12; z = 0.2 + bob; break; }
+    case 'drawn': q = DRAWN.at(u); x = q[0]*1.05; y = q[1]*1.05; z = 0.24 + bob; break;
+    case 'skeleton': { const q2 = [4,8,12,16,20][j % 5]*3; x = SKP[q2]; y = SKP[q2+1] + 0.14; z = SKP[q2+2] + 0.1; break; } // ảnh trên đầu ngón
     case 'water': x = -1.25 + 2.5*j/Math.max(1, C-1); y = 0.68 + 0.13*Math.sin(x*2.4 - ta*2.6 + 2) + bob*0.5; z = 0.25; break;
     case 'miku': { const top = j % 2 === 0, cnt = top ? Math.ceil(C/2) : Math.floor(C/2), i = j >> 1;
       x = cnt > 1 ? -1.05 + 2.1*i/(cnt-1) : 0; y = (top ? 0.7 : -0.7) + bob; break; }
@@ -949,7 +1316,10 @@ function frame(now){
   const dt = Math.min(0.05, (now-last)/1000); last = now; const t = now/1000, ta = t*MOT;
   frames++; if (now - fpsT > 1000){ window.__fps = frames; frames = 0; fpsT = now; }
   detect(now);
+  // ✋ giữ yên hơn 2,5 giây → hạt rời vụ nổ, bám thành bàn tay ánh sáng
+  if (camOn && !manual && handMode === 'explode' && mode === 'explode' && stable === 'open' && !moving && t - modeT0 > 2.5) handMode = 'skeleton';
   setMode(manual || (camOn ? handMode : null) || 'idle');
+  if (REROLL.has(mode) && !RM && t - modeT0 > 7) reroll(false); // giữ lâu → hình tự đổi biến thể
   const M = MODES[mode], mid = MID[mode], age = t - modeT0;
   uni.uTime.value = t;
   uni.uTint.value.lerp(tintTarget, Math.min(1, dt*3));
@@ -973,18 +1343,30 @@ function frame(now){
   const sc = fit*zoomCur, hx = (tipNdc.x*halfW - group.position.x)/sc, hy = (tipNdc.y*halfH - group.position.y)/sc;
   for (let k = TL-1; k > 0; k--){ trail[k][0] = trail[k-1][0]; trail[k][1] = trail[k-1][1]; }
   const tk = Math.min(1, dt*14); trail[0][0] += (hx - trail[0][0])*tk; trail[0][1] += (hy - trail[0][1])*tk;
+  // vẽ trong không khí: ghi nét đầu ngón (tay trong khung, hoặc đang giữ chuột); mất tay = nhấc bút
+  if (mode === 'point' && ((camOn && handSeen) || penDown)){
+    if (!curStroke){ curStroke = []; STROKES.push(curStroke); }
+    const L = curStroke[curStroke.length-1], P0 = trail[0];
+    if (strokeN >= 900 && STROKES.length > 1){ strokeN -= STROKES.shift().length; }
+    if (strokeN < 900 && (!L || Math.hypot(P0[0]-L[0], P0[1]-L[1]) > 0.015)){ curStroke.push([P0[0], P0[1], now]); strokeN++; }
+  } else curStroke = null;
+  // bàn tay ánh sáng: 21 khớp mỗi tay → toạ độ cảnh (cùng phép đổi với đầu ngón ở trên)
+  if (mode === 'skeleton'){ const HS = camOn && handSeen ? hands : [TPL]; nSK = Math.min(2, HS.length);
+    for (let h = 0; h < nSK; h++) for (let k = 0; k < 21; k++){ const L = HS[h][k], q = (h*21 + k)*3, bob = HS[h] === TPL ? Math.sin(t*1.6 + k*0.4)*0.012 : 0;
+      SKP[q] = (((1-L.x)*2-1)*halfW - group.position.x)/sc; SKP[q+1] = ((1-(L.y+bob)*2)*halfH - group.position.y)/sc; SKP[q+2] = -(L.z || 0)*3; } }
 
   // xoay cả khối
-  const still = mode === 'point' || mode === 'gallery';
+  const still = mode === 'point' || mode === 'gallery' || mode === 'skeleton', flat = mode === 'point' || mode === 'skeleton';
   if (M.spin) spin += dt*0.35*MOT; else spin = group.rotation.y - dragY;
-  const ry = mode === 'point' ? 0 : mode === 'gallery' ? dragY : (M.spin ? spin : Math.sin(t*0.6)*0.4*MOT) + dragY;
-  const rx = mode === 'point' ? 0 : (mode === 'idle' ? 0.42 : mode === 'gallery' ? 0.16 : 0.1) + dragX;
+  const ry = flat ? 0 : mode === 'gallery' ? dragY : (M.spin ? spin : Math.sin(t*0.6)*0.4*MOT) + dragY;
+  const rx = flat ? 0 : (mode === 'idle' ? 0.42 : mode === 'gallery' ? 0.16 : 0.1) + dragX;
   group.rotation.y += angDiff(group.rotation.y, ry)*Math.min(1, dt*3);
   group.rotation.x += (rx - group.rotation.x)*Math.min(1, dt*3);
   if (!still) dragX *= 1 - Math.min(1, dt*0.4);
 
   const jit = mode === 'idle' ? 0.03 : mode === 'explode' ? 0.02 : 0.012;
-  const pc = pinchCur, animK = (mode === 'point' || mode === 'tornado' || mode === 'water') ? 2.2 : 1;
+  const pc = pinchCur, animK = (mode === 'point' || mode === 'tornado' || mode === 'water' || mode === 'skeleton') ? 2.2 : 1;
+  const wAmp = V.amp || 0.13, tTw = V.tw || 1, hh2 = nSK > 1 ? 63 : 0;
   for (let i = 0; i < N; i++){
     const j = i*3, s = rnd[i]*1000;
     let tx, ty, tz, snap = false;
@@ -992,13 +1374,18 @@ function frame(now){
       case 3: { const k = E*(1.2 + rnd[i]*2.8); tx = home[j]+dir[j]*k; ty = home[j+1]+dir[j+1]*k; tz = home[j+2]+dir[j+2]*k; break; } // nổ
       case 6: { const ti = Math.floor(Math.pow(rnd[i], 1.7)*TL), sp = 0.025 + ti/TL*0.2, p = trail[ti];             // vệt sáng
         tx = p[0]+dir[j]*sp; ty = p[1]+dir[j+1]*sp; tz = dir[j+2]*sp; break; }
-      case 11: tx = home[j]; ty = home[j+1] + 0.13*Math.sin(home[j]*2.4 - ta*2.6 + home[j+1]*4); tz = home[j+2]; break;   // sóng
+      case 11: tx = home[j]; ty = home[j+1] + wAmp*Math.sin(home[j]*2.4 - ta*2.6 + home[j+1]*4); tz = home[j+2]; break;   // sóng
       case 13: tx = home[j]*pc; ty = home[j+1]*pc; tz = home[j+2]*pc; break;                                              // véo
       case 14: if (rnd[i] < .2){ tx = home[j]; ty = home[j+1]; tz = home[j+2]; }                                          // mưa
         else { const v = 0.5 + rnd[i]*0.6; tx = home[j] + Math.sin(ta*0.6 + s)*0.02; ty = 0.85 - (((0.85 - home[j+1]) + ta*v) % 2.05); tz = home[j+2]; snap = true; }
         break;
-      case 15: { const h = home[j+1], a = home[j] + ta*(3.0 - h*0.8), r = funnelR(h)*home[j+2], cx = Math.sin(ta*1.1 + h*1.8)*0.12; // lốc xoáy
+      case 15: { const h = home[j+1], a = home[j] + ta*(3.0 - h*0.8)*tTw, r = funnelR(h)*home[j+2], cx = Math.sin(ta*1.1 + h*1.8)*0.12; // lốc xoáy
         tx = cx + Math.cos(a)*r; ty = h - 0.05; tz = Math.sin(a)*r; break; }
+      case MSK: { const o = (i & 1) ? hh2 : 0, b = boneOf[i];                                                          // bàn tay ánh sáng
+        if (b >= 21){ const q = o + (b-21)*3; tx = SKP[q] + dir[j]*0.045; ty = SKP[q+1] + dir[j+1]*0.045; tz = SKP[q+2] + dir[j+2]*0.045; } // khớp sáng
+        else { const qa = o + BA[b]*3, qb = o + BB2[b]*3, u = boneU[i];
+          tx = SKP[qa] + (SKP[qb]-SKP[qa])*u + dir[j]*0.02; ty = SKP[qa+1] + (SKP[qb+1]-SKP[qa+1])*u + dir[j+1]*0.02; tz = SKP[qa+2] + (SKP[qb+2]-SKP[qa+2])*u + dir[j+2]*0.02; }
+        break; }
       default: tx = home[j]*beat; ty = home[j+1]*beat; tz = home[j+2]*beat;
     }
     tx += Math.sin(t*0.9+s)*jit; ty += Math.cos(t*0.7+s*1.3)*jit; tz += Math.sin(t*0.8+s*0.7)*jit;
@@ -1007,6 +1394,8 @@ function frame(now){
     pos[j] += (tx-pos[j])*k; pos[j+1] += (ty-pos[j+1])*k; pos[j+2] += (tz-pos[j+2])*k;
   }
   geo.attributes.position.needsUpdate = true;
+  lines.visible = styleCur === 'constellation' && LINE_OK.has(mode);
+  if (lines.visible){ lineMat.color.copy(uni.uTint.value); lineMat.opacity = 0.22*E; }
 
   // ảnh xếp theo viền hình đang hiện, luôn quay mặt về phía người xem
   qInv.copy(group.quaternion).invert();
